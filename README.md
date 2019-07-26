@@ -18,10 +18,12 @@ client := qradar.NewClient(nil)
 offenses, err := client.SIEM.ListOffenses(context.Background(), opt)
 ```
 
-If you want to provide your own `http.Client`, you can do it :
+If you want to provide your own `http.Client`, or change the version, you can do it :
 
 ```go
 httpClient := &http.Client{}
 
 client := qradar.NewClient(httpClient)
+
+client.Version = "7.0"
 ```
