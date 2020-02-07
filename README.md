@@ -18,12 +18,25 @@ client := qradar.NewClient(nil)
 offenses, err := client.SIEM.ListOffenses(context.Background(), opt)
 ```
 
-If you want to provide your own `http.Client`, or change the version, you can do it :
+If you want to provide your own `http.Client`, you can do it :
 
 ```go
 httpClient := &http.Client{}
-
 client := qradar.NewClient(httpClient)
+```
 
+If you want to change the default version (which is 12.0), do it as follow :
+
+```go
 client.Version = "7.0"
+```
+
+Then you can start using it.
+
+```go
+fields := "id,description,status,assigned_to,magnitude,start_time,last_updated_time,follow_up,offense_source,offense_type"
+filter := "status = \"OPEN\""
+
+// List the offenses
+offenses, total, err := s.client.SIEM.ListOffenses(ctx, fields, filter, "", 0, 40)
 ```

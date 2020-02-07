@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 )
 
 // Rule is a QRadar rule.
@@ -65,11 +63,15 @@ type Note struct {
 	Username   string `json:"username"`
 }
 
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+
 // ListOffenses returns the offenses with given fields and filters.
-func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort string, min, max int) ([]*Offense, int, error) {
+func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort string, min, max int) ([]*Offense, int, error) {
 	// Prepare the URL
 	var reqURL *url.URL
-	reqURL, err := url.Parse(service.client.BaseURL)
+	reqURL, err := url.Parse(endpoint.client.BaseURL)
 	if err != nil {
 		return nil, 0, fmt.Errorf("Error while parsing the URL : %s", err)
 	}
@@ -102,14 +104,14 @@ func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort s
 	req = req.WithContext(ctx)
 
 	// Set HTTP headers
-	req.Header.Set("SEC", service.client.Token)
-	req.Header.Set("Version", service.client.Version)
+	req.Header.Set("SEC", endpoint.client.Token)
+	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Range", fmt.Sprintf("items=%d-%d", min, max))
 
 	// Do the request
-	resp, err := service.client.client.Do(req)
+	resp, err := endpoint.client.client.Do(req)
 	if err != nil {
 		return nil, 0, fmt.Errorf("error while doing the request : %s", err)
 	}
@@ -122,15 +124,9 @@ func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort s
 	}
 
 	// Process the Content-Range
-	contentRange := resp.Header.Get("Content-Range")
-	contentRangeSplit := strings.Split(contentRange, " ")
-	if len(contentRangeSplit) < 2 {
-		return nil, 0, fmt.Errorf("Error with the Content-Range")
-	}
-	contentRangeSplit2 := strings.Split(contentRangeSplit[1], "/")
-	total, err := strconv.Atoi(contentRangeSplit2[1])
+	_, _, total, err := parseContentRange(resp.Header.Get("Content-Range"))
 	if err != nil {
-		return nil, 0, fmt.Errorf("error while converting the total into int")
+		return nil, 0, fmt.Errorf("error while parsing the content-range: %s", err)
 	}
 
 	// Prepare the response
@@ -146,15 +142,16 @@ func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort s
 }
 
 // GetOffense returns the offense with given ID.
-func (service *Service) GetOffense(ctx context.Context, id, fields string) (*Offense, error) {
+func (endpoint *Endpoint) GetOffense(ctx context.Context, id, fields string) (*Offense, error) {
 	return nil, nil
 }
 
 // UpdateOffense with given ID.
-func (service *Service) UpdateOffense(ctx context.Context, id string) ([]*Offense, int, error) {
+func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id string) ([]*Offense, int, error) {
 	return nil, 0, nil
 }
 
-func (service *Service) ListOffenseNotes(ctx context.Context, id string) ([]*Offense, int, error) {
+// ListOffenseNotes ...
+func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Offense, int, error) {
 	return nil, 0, nil
 }

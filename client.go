@@ -8,6 +8,10 @@ const (
 	defaultVersion = "12.0"
 )
 
+//------------------------------------------------------------------------------
+// Structure
+//------------------------------------------------------------------------------
+
 // Client is a client for QRadar REST API.
 type Client struct {
 	client *http.Client
@@ -40,6 +44,10 @@ type Client struct {
 	Help               Help
 }
 
+//------------------------------------------------------------------------------
+// Factory
+//------------------------------------------------------------------------------
+
 // NewClient returns a new QRadar API client.
 func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	if httpClient == nil {
@@ -54,8 +62,8 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 		Version: defaultVersion,
 	}
 
-	// Add the services
-	c.SIEM = &Service{
+	// Add the endpoints
+	c.SIEM = &Endpoint{
 		client: c,
 	}
 
