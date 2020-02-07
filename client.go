@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	defaultVersion = "9.0"
+	defaultVersion = "12.0"
 )
 
 // Client is a client for QRadar REST API.
@@ -21,20 +21,23 @@ type Client struct {
 	// Version
 	Version string
 
-	// Services
-	SIEM          *SIEMService
-	ReferenceData *ReferenceDataService
-	//Analytics
-	//Ariel
-	//AssetModel
-	//Auth
-	//Config
-	//DataClassification
-	//Forensics
-	//GUIAppFramework
-	//HealthData
-	//Help
-	//QNI
+	// Endpoints
+	Access             Access
+	SIEM               SIEM
+	ReferenceData      ReferenceData
+	Analytics          Analytics
+	Ariel              Ariel
+	AssetModel         AssetModel
+	Auth               Auth
+	BackupAndRestore   BackupAndRestore
+	BandwithManager    BandwithManager
+	Config             Config
+	DataClassification DataClassification
+	Forensics          Forensics
+	GUIAppFramework    GUIAppFramework
+	Health             Health
+	HealthData         HealthData
+	Help               Help
 }
 
 // NewClient returns a new QRadar API client.
