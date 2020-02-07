@@ -66,7 +66,7 @@ type Note struct {
 }
 
 // ListOffenses returns the offenses with given fields and filters.
-func (service *Service) ListOffenses(ctx context.Context, fields, filters string, min, max int) ([]*Offense, int, error) {
+func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort string, min, max int) ([]*Offense, int, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(service.client.BaseURL)
@@ -76,12 +76,22 @@ func (service *Service) ListOffenses(ctx context.Context, fields, filters string
 	reqURL.Path += "/api/siem/offenses"
 	parameters := url.Values{}
 
+	// Set fields
 	if fields != "" {
 		parameters.Add("fields", fields)
 	}
-	if filters != "" {
-		parameters.Add("filter", filters)
+
+	// Set filter
+	if filter != "" {
+		parameters.Add("filter", filter)
 	}
+
+	// Set sort
+	if sort != "" {
+		parameters.Add("sort", sort)
+	}
+
+	// Encode parameters
 	reqURL.RawQuery = parameters.Encode()
 
 	// Create the request

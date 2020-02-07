@@ -1,18 +1,44 @@
 package goqradar
 
 import (
-	"context"
-	"net/http"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
-// Do the request
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
-	// Do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+func parseContentRange(cr string) (int, int, int, error) {
+	// Trim
+	trimed := strings.Trim(cr, "items ")
 
-	return nil, nil
+	// Split min-max and total
+	split := strings.Split(trimed, "/")
+	if len(split) != 2 {
+		return 0, 0, 0, fmt.Errorf("error with content-range")
+	}
+
+	// Split min and max
+	minAndMax := strings.Split(split[0], "-")
+	if len(minAndMax) != 2 {
+		return 0, 0, 0, fmt.Errorf("error with content-range")
+	}
+
+	// Convert min
+	min, err := strconv.Atoi(minAndMax[0])
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("error while converting the min into int")
+	}
+
+	// Convert max
+	max, err := strconv.Atoi(minAndMax[1])
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("error while converting the max into int")
+	}
+
+	// Convert total
+	total, err := strconv.Atoi(split[1])
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("error while converting the total into int")
+	}
+
+	return min, max, total, nil
 }
