@@ -55,7 +55,9 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	}
 
 	// Add the services
-	c.SIEM = &SIEMService{client: c}
+	c.SIEM = &Service{
+		client: c,
+	}
 
 	return c
 }

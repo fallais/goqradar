@@ -1,5 +1,6 @@
 package goqradar
 
-type service struct {
+// Service holds the client.
+type Service struct {
 	client *Client
 }
