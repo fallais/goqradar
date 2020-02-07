@@ -1,11 +1,11 @@
-# go-qradar
+# goqradar
 
-**go-qradar** is a library written in Golang that helps you with the **IBM QRadar REST API**.
+**goqradar** is a library written in Golang that helps you with the **IBM QRadar REST API**.
 
 ## Usage
 
 ```go
-import "github.com/fallais/go-qradar"
+import "github.com/fallais/goqradar"
 ```
 
 Construct a new QRadar client, then use the various services on the client to
