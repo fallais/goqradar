@@ -145,10 +145,12 @@ func (service *Service) ListOffenses(ctx context.Context, fields, filter, sort s
 	return offenses, total, nil
 }
 
-func (service *Service) GetOffense(ctx context.Context, id string) ([]*Offense, int, error) {
-	return nil, 0, nil
+// GetOffense returns the offense with given ID.
+func (service *Service) GetOffense(ctx context.Context, id, fields string) (*Offense, error) {
+	return nil, nil
 }
 
+// UpdateOffense with given ID.
 func (service *Service) UpdateOffense(ctx context.Context, id string) ([]*Offense, int, error) {
 	return nil, 0, nil
 }
