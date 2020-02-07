@@ -1,4 +1,4 @@
-package qradar
+package goqradar
 
 // Options are the configurable options for the QRadar client.
 type Options struct {

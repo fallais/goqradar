@@ -1,4 +1,4 @@
-package qradar
+package goqradar
 
 // Rule is a QRadar rule.
 type Rule struct {
@@ -43,6 +43,15 @@ type Offense struct {
 	LocalDestinationAddressIds []int    `json:"local_destination_address_ids"`
 	LocalDestinationCount      int      `json:"local_destination_count"`
 	Status                     string   `json:"status"`
+	Notes                      []*Note  `json:"notes,omitempty"`
+}
+
+// Note is a QRadar note
+type Note struct {
+	ID         int    `json:"id"`
+	CreateTime int    `json:"create_time"`
+	NoteText   string `json:"note_text"`
+	Username   string `json:"username"`
 }
 
 // SIEMService is the service of SIEM endpoint.
