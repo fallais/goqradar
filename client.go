@@ -63,9 +63,8 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	}
 
 	// Add the endpoints
-	c.SIEM = &Endpoint{
-		client: c,
-	}
+	c.SIEM = &Endpoint{client: c}
+	c.ReferenceData = &Endpoint{client: c}
 
 	return c
 }

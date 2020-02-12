@@ -66,7 +66,15 @@ type SIEM interface {
 }
 
 // ReferenceData endpoint.
-type ReferenceData interface{}
+type ReferenceData interface {
+	UpdateBulkLoadRM(context.Context, string, map[string]string, string) (*BulkMap, error)
+	DeleteReferenceMap(context.Context, string, string, bool) error
+	ListSets(context.Context, string, string, int, int) ([]*Set, error)
+	UpdateBulkLoadRS(context.Context, string, []string, string) (*Set, error)
+	DeleteReferenceSet(context.Context, string, string, bool) error
+	UpdateBulkLoadRT(context.Context, string, map[string]map[string]string, string) (*BulkTable, error)
+	DeleteReferenceTable(context.Context, string, string, bool) error
+}
 
 // Ariel endpoint.
 type Ariel interface {
