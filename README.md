@@ -13,9 +13,6 @@ access different parts of the QRadar API. For example:
 
 ```go
 client := qradar.NewClient(nil)
-
-// List offenses
-offenses, err := client.SIEM.ListOffenses(context.Background(), opt)
 ```
 
 If you want to provide your own `http.Client`, you can do it :
@@ -25,7 +22,7 @@ httpClient := &http.Client{}
 client := qradar.NewClient(httpClient)
 ```
 
-If you want to change the default version (which is 12.0), do it as follow :
+If you want to downgrade the default version (which is 12.0), you do it as follow :
 
 ```go
 client.Version = "7.0"
