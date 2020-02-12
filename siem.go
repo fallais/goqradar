@@ -112,7 +112,10 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	}
 
 	// Decode the response
-	json.NewDecoder(resp.Body).Decode(&response.Offenses)
+	err = json.NewDecoder(resp.Body).Decode(&response.Offenses)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
 
 	return response, nil
 }
