@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 )
 
 // Rule is a QRadar rule.
@@ -63,82 +61,60 @@ type Note struct {
 	Username   string `json:"username"`
 }
 
+// OffensePaginatedResponse is the paginated response.
+type OffensePaginatedResponse struct {
+	Total    int        `json:"total"`
+	Min      int        `json:"min"`
+	Max      int        `json:"max"`
+	Offenses []*Offense `json:"offenses"`
+}
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
 
-// ListOffenses returns the offenses with given fields and filters.
-func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort string, min, max int) ([]*Offense, int, error) {
-	// Prepare the URL
-	var reqURL *url.URL
-	reqURL, err := url.Parse(endpoint.client.BaseURL)
-	if err != nil {
-		return nil, 0, fmt.Errorf("Error while parsing the URL : %s", err)
-	}
-	reqURL.Path += "/api/siem/offenses"
-	parameters := url.Values{}
-
-	// Set fields
+// ListOffenses returns the offenses with given fields, filters and sort.
+func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort string, min, max int) (*OffensePaginatedResponse, error) {
+	// Options
+	options := []Option{}
 	if fields != "" {
-		parameters.Add("fields", fields)
+		options = append(options, WithParam("fields", fields))
 	}
-
-	// Set filter
 	if filter != "" {
-		parameters.Add("filter", filter)
+		options = append(options, WithParam("filter", filter))
 	}
-
-	// Set sort
 	if sort != "" {
-		parameters.Add("sort", sort)
+		options = append(options, WithParam("sort", sort))
 	}
-
-	// Encode parameters
-	reqURL.RawQuery = parameters.Encode()
-
-	// Create the request
-	req, err := http.NewRequest("GET", reqURL.String(), nil)
-	if err != nil {
-		return nil, 0, fmt.Errorf("error while creating the request : %s", err)
-	}
-	req = req.WithContext(ctx)
-
-	// Set HTTP headers
-	req.Header.Set("SEC", endpoint.client.Token)
-	req.Header.Set("Version", endpoint.client.Version)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Range", fmt.Sprintf("items=%d-%d", min, max))
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.client.Do(req)
+	resp, err := endpoint.client.do(http.MethodGet, "siem/offenses", options...)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error while doing the request : %s", err)
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
-	defer resp.Body.Close()
 
-	// Read the respsonse
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, 0, fmt.Errorf("error while reading the request : %s", err)
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
 	}
 
 	// Process the Content-Range
-	_, _, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
 	if err != nil {
-		return nil, 0, fmt.Errorf("error while parsing the content-range: %s", err)
+		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
 	}
 
 	// Prepare the response
-	var offenses []*Offense
-
-	// Unmarshal the response
-	err = json.Unmarshal([]byte(body), &offenses)
-	if err != nil {
-		return nil, 0, fmt.Errorf("Error while unmarshalling the response : %s. HTTP response is : %s", err, string(body))
+	response := &OffensePaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
 	}
 
-	return offenses, total, nil
+	// Decode the response
+	json.NewDecoder(resp.Body).Decode(&response.Offenses)
+
+	return response, nil
 }
 
 // GetOffense returns the offense with given ID.

@@ -59,7 +59,7 @@ type Help interface{}
 
 // SIEM endpoint.
 type SIEM interface {
-	ListOffenses(context.Context, string, string, string, int, int) ([]*Offense, int, error)
+	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
 	GetOffense(context.Context, string, string) (*Offense, error)
 	UpdateOffense(context.Context, string) ([]*Offense, int, error)
 	ListOffenseNotes(context.Context, string) ([]*Offense, int, error)
