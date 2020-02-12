@@ -51,7 +51,7 @@ type Client struct {
 // NewClient returns a new QRadar API client.
 func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	if httpClient == nil {
-		httpClient = &http.Client{}
+		httpClient = http.DefaultClient
 	}
 
 	// Create the client
