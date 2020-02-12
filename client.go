@@ -16,19 +16,17 @@ const (
 type Client struct {
 	client *http.Client
 
-	// Base URL for API requests.
+	// BaseURL is the base URL for API requests.
 	BaseURL string
 
-	// Token
+	// Token is the security token.
 	Token string
 
-	// Version
+	// Version is the API version.
 	Version string
 
 	// Endpoints
 	Access             Access
-	SIEM               SIEM
-	ReferenceData      ReferenceData
 	Analytics          Analytics
 	Ariel              Ariel
 	AssetModel         AssetModel
@@ -42,6 +40,8 @@ type Client struct {
 	Health             Health
 	HealthData         HealthData
 	Help               Help
+	ReferenceData      ReferenceData
+	SIEM               SIEM
 }
 
 //------------------------------------------------------------------------------
@@ -63,6 +63,9 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	}
 
 	// Add the endpoints
+	c.Access = &Endpoint{client: c}
+	//c.Ariel = &Endpoint{client: c}
+	c.AssetModel = &Endpoint{client: c}
 	c.SIEM = &Endpoint{client: c}
 	c.ReferenceData = &Endpoint{client: c}
 

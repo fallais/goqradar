@@ -5,7 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
+
+//------------------------------------------------------------------------------
+// Structures
+//------------------------------------------------------------------------------
 
 // Rule is a QRadar rule.
 type Rule struct {
@@ -120,17 +125,47 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	return response, nil
 }
 
-// GetOffense returns the offense with given ID.
-func (endpoint *Endpoint) GetOffense(ctx context.Context, id, fields string) (*Offense, error) {
-	return nil, nil
+// GetOffense returns the offense by given ID.
+func (endpoint *Endpoint) GetOffense(ctx context.Context, id int, fields string) (*Offense, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(http.MethodGet, "siem/offenses"+strconv.Itoa(id), options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Prepare the response
+	var response *Offense
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
 }
 
 // UpdateOffense with given ID.
-func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id string) ([]*Offense, int, error) {
+func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id int, assignedTo string) error {
+	return nil
+}
+
+// ListOffenseNotes returns the notes of the given offense.
+func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Note, int, error) {
 	return nil, 0, nil
 }
 
-// ListOffenseNotes ...
-func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Offense, int, error) {
+// CreateOffenseNote ...
+func (endpoint *Endpoint) CreateOffenseNote(ctx context.Context, id string) ([]*Note, int, error) {
 	return nil, 0, nil
 }
