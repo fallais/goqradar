@@ -70,6 +70,24 @@ type BulkTable struct {
 	TimeoutType      string `json:"timeout_type"`
 }
 
+// ListSetsPaginatedResponse is the paginated response.
+type ListSetsPaginatedResponse struct {
+	Total    int    `json:"total"`
+	Min      int    `json:"min"`
+	Max      int    `json:"max"`
+	ListSets []*Set `json:"offenses"`
+}
+
+// BulkMapOfMap is BulkMapOfMap
+type BulkMapOfMap struct {
+	CreationTime     int    `json:"creation_time"`
+	ElementType      string `json:"element_type"`
+	Name             string `json:"name"`
+	NumberOfElements int    `json:"number_of_elements"`
+	TimeToLive       string `json:"time_to_live"`
+	TimeoutType      string `json:"timeout_type"`
+}
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
@@ -188,66 +206,47 @@ func (endpoint *Endpoint) GetSet(ctx context.Context, fields string, filter stri
 }
 
 // ListSets list all the sets
-func (endpoint *Endpoint) ListSets(ctx context.Context, fields string, filter string, min, max int) ([]*Set, error) {
-	// Prepare the URL
-	var reqURL *url.URL
-	reqURL, err := url.Parse(endpoint.client.BaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("Error while parsing the URL : %s", err)
-	}
-	reqURL.Path += "/api/reference_data/sets"
-	parameters := url.Values{}
-
-	// Set fields
+func (endpoint *Endpoint) ListSets(ctx context.Context, fields string, filter string, min, max int) (*ListSetsPaginatedResponse, error) {
+	// Options
+	options := []Option{}
 	if fields != "" {
-		parameters.Add("fields", fields)
+		options = append(options, WithParam("fields", fields))
 	}
-
-	// Set filter
 	if filter != "" {
-		parameters.Add("filter", filter)
+		options = append(options, WithParam("filter", filter))
 	}
-
-	// Encode parameters
-	reqURL.RawQuery = parameters.Encode()
-
-	// Create the request
-	req, err := http.NewRequest("GET", reqURL.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("error while creating the request : %s", err)
-	}
-	req = req.WithContext(ctx)
-
-	// Set HTTP headers
-	req.Header.Set("SEC", endpoint.client.Token)
-	req.Header.Set("Version", endpoint.client.Version)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Range", fmt.Sprintf("items=%d-%d", min, max))
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.client.Do(req)
+	resp, err := endpoint.client.do(http.MethodGet, "/reference_data/sets", options...)
 	if err != nil {
-		return nil, fmt.Errorf("error while doing the request : %s", err)
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
-	defer resp.Body.Close()
 
-	// Read the respsonse
-	body, err := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
 	if err != nil {
-		return nil, fmt.Errorf("error while reading the request : %s", err)
+		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
 	}
 
 	// Prepare the response
-	var sets []*Set
-
-	// Unmarshal the response
-	err = json.Unmarshal([]byte(body), &sets)
-	if err != nil {
-		return nil, fmt.Errorf("Error while unmarshalling the response : %s. HTTP response is : %s", err, string(body))
+	response := &ListSetsPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
 	}
 
-	return sets, nil
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.ListSets)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
 }
 
 // UpdateBulkLoadRS by name
@@ -420,6 +419,104 @@ func (endpoint *Endpoint) DeleteReferenceTable(ctx context.Context, name string,
 		return fmt.Errorf("Error while parsing the URL : %s", err)
 	}
 	reqURL.Path += "/api/reference_data/tables/"
+	reqURL.Path += name
+	parameters := url.Values{}
+	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))
+	reqURL.RawQuery = parameters.Encode()
+
+	// Create the request
+	req, err := http.NewRequest("DELETE", reqURL.String(), nil)
+	if err != nil {
+		return fmt.Errorf("Error while creating the request : %s", err)
+	}
+
+	// Set HTTP headers
+	req.Header.Set("SEC", endpoint.client.Token)
+	req.Header.Set("Version", endpoint.client.Version)
+	req.Header.Set("Content-Type", "application/json")
+
+	// Do the request
+	resp, err := endpoint.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while doing the request : %s", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the status code
+	if resp.StatusCode != 202 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("Status code is %d : Error while reading the body", resp.StatusCode)
+		}
+
+		return fmt.Errorf("Status code is %d : %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+// UpdateBulkLoadRMM by name
+func (endpoint *Endpoint) UpdateBulkLoadRMM(ctx context.Context, name string, data map[string]map[string]string, fields string) (*BulkMapOfMap, error) {
+	// Prepare the URL
+	var reqURL *url.URL
+	reqURL, err := url.Parse(endpoint.client.BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("Error while parsing the URL : %s", err)
+	}
+	reqURL.Path += "/reference_data/map_of_sets/bulk_load/"
+	reqURL.Path += name
+
+	// Create the data
+	d, err := json.Marshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("Error while marshalling the values : %s", err)
+	}
+
+	// Create the request
+	req, err := http.NewRequest("POST", reqURL.String(), bytes.NewBuffer(d))
+	if err != nil {
+		return nil, fmt.Errorf("Error while creating the request : %s", err)
+	}
+
+	// Set HTTP headers
+	req.Header.Set("SEC", endpoint.client.Token)
+	req.Header.Set("Version", endpoint.client.Version)
+	req.Header.Set("Content-Type", "application/json")
+
+	// Do the request
+	resp, err := endpoint.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Error while doing the request : %s", err)
+	}
+	defer resp.Body.Close()
+
+	// Read the respsonse
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error while reading the request : %s", err)
+	}
+
+	// Prepare the response
+	var response *BulkMapOfMap
+
+	// Unmarshal the response
+	err = json.Unmarshal([]byte(body), &response)
+	if err != nil {
+		return nil, fmt.Errorf("Error while unmarshalling the response : %s. HTTP response is : %s", err, string(body))
+	}
+
+	return response, nil
+}
+
+// DeleteReferenceMapOfMap by name
+func (endpoint *Endpoint) DeleteReferenceMapOfMap(ctx context.Context, name string, fields string, purgeOnly bool) error {
+	// Prepare the URL
+	var reqURL *url.URL
+	reqURL, err := url.Parse(endpoint.client.BaseURL)
+	if err != nil {
+		return fmt.Errorf("Error while parsing the URL : %s", err)
+	}
+	reqURL.Path += "/reference_data/map_of_sets/"
 	reqURL.Path += name
 	parameters := url.Values{}
 	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))

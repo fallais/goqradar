@@ -2,7 +2,6 @@ package goqradar
 
 import (
 	"context"
-	"net/http"
 )
 
 //------------------------------------------------------------------------------
@@ -69,21 +68,22 @@ type SIEM interface {
 type ReferenceData interface {
 	UpdateBulkLoadRM(context.Context, string, map[string]string, string) (*BulkMap, error)
 	DeleteReferenceMap(context.Context, string, string, bool) error
-	ListSets(context.Context, string, string, int, int) ([]*Set, error)
+	ListSets(context.Context, string, string, int, int) (*ListSetsPaginatedResponse, error)
 	UpdateBulkLoadRS(context.Context, string, []string, string) (*Set, error)
 	DeleteReferenceSet(context.Context, string, string, bool) error
 	UpdateBulkLoadRT(context.Context, string, map[string]map[string]string, string) (*BulkTable, error)
 	DeleteReferenceTable(context.Context, string, string, bool) error
+	UpdateBulkLoadRMM(context.Context, string, map[string]map[string]string, string) (*BulkMapOfMap, error)
+	DeleteReferenceMapOfMap(context.Context, string, string, bool) error
 }
 
 // Ariel endpoint.
 type Ariel interface {
-	ListDatabases() (*http.Response, error)
-	GetDatabase(string) (*http.Response, error)
-	ListSearches() (*http.Response, error)
-	CreateSearch(string) (*http.Response, error)
-	GetSearch(string) (*http.Response, error)
-	GetSearchResults(string) (*http.Response, error)
-	UpdateSearch(string) (*http.Response, error)
-	DeleteSearch(string) (*http.Response, error)
+	GetSavedSearch(context.Context, int, string) (*SavedSearch, error)
+	ListSavedSearch(context.Context, string, string, int, int) (*SavedSearchPaginatedResponse, error)
+	GetSavedSearchDependentTask(context.Context, int, string) (*SavedSearchDependentTask, error)
+	GetSearches(context.Context, string, string) (*Searches, error)
+	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
+	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
+	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
 }
