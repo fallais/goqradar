@@ -61,8 +61,8 @@ type Help interface{}
 type SIEM interface {
 	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
 	GetOffense(context.Context, int, string) (*Offense, error)
-	UpdateOffense(context.Context, int, string, string, string, string) error
-	ListOffenseNotes(context.Context, string) ([]*Offense, int, error)
+	//UpdateOffense(context.Context, int, string, string, string, string) error
+	//ListOffenseNotes(context.Context, string) ([]*Offense, int, error)
 }
 
 // ReferenceData endpoint.

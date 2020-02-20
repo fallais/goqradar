@@ -1,6 +1,7 @@
 package goqradar
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -45,7 +46,7 @@ func parseContentRange(cr string) (int, int, int, error) {
 	return min, max, total, nil
 }
 
-func (c *Client) do(method, endpoint string, opts ...Option) (*http.Response, error) {
+func (c *Client) do(ctx context.Context, method, endpoint string, opts ...Option) (*http.Response, error) {
 	// Options
 	var apiOptions options
 
@@ -76,6 +77,9 @@ func (c *Client) do(method, endpoint string, opts ...Option) (*http.Response, er
 	if err != nil {
 		return nil, err
 	}
+
+	// Add context
+	req = req.WithContext(ctx)
 
 	// Default headers
 	headers := http.Header{}

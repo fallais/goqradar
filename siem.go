@@ -94,7 +94,7 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "siem/offenses", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -134,7 +134,7 @@ func (endpoint *Endpoint) GetOffense(ctx context.Context, id int, fields string)
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "siem/offenses"+strconv.Itoa(id), options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses"+strconv.Itoa(id), options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
