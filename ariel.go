@@ -159,7 +159,7 @@ func (endpoint *Endpoint) GetSavedSearch(ctx context.Context, id int, fields str
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/saved_searches/"+strconv.Itoa(id), options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/saved_searches/"+strconv.Itoa(id), options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -199,7 +199,7 @@ func (endpoint *Endpoint) ListSavedSearch(ctx context.Context, fields string, fi
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/saved_searches", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/saved_searches", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -239,7 +239,7 @@ func (endpoint *Endpoint) GetSavedSearchDependentTask(ctx context.Context, taskI
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/saved_search_dependent_tasks/"+strconv.Itoa(taskID), options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/saved_search_dependent_tasks/"+strconv.Itoa(taskID), options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -275,7 +275,7 @@ func (endpoint *Endpoint) GetSearches(ctx context.Context, searchID string, pref
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/searches/"+searchID, options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/searches/"+searchID, options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -315,7 +315,7 @@ func (endpoint *Endpoint) ListSearches(ctx context.Context, fields string, filte
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/searches", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/searches", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -359,7 +359,7 @@ func (endpoint *Endpoint) GetDatabase(ctx context.Context, databaseName string, 
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/databases/"+databaseName, options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/databases/"+databaseName, options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -400,7 +400,7 @@ func (endpoint *Endpoint) ListDatabase(ctx context.Context, filter string, min, 
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/databases", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/databases", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
