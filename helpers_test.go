@@ -23,4 +23,16 @@ func TestParseContentRange(t *testing.T) {
 		t.Fatal("should error")
 	}
 
+	cr4 := "0-0/1"
+	_, _, _, err = parseContentRange(cr4)
+	if err != nil {
+		t.Fatalf("should not error but error is: %s", err)
+	}
+
+	cr5 := "*/3"
+	_, _, _, err = parseContentRange(cr5)
+	if err != nil {
+		t.Fatalf("should not error but error is: %s", err)
+	}
+
 }

@@ -106,7 +106,7 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	// Process the Content-Range
 	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
 	if err != nil {
-		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
+		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
 	}
 
 	// Prepare the response
