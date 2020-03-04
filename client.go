@@ -66,6 +66,8 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	c.SIEM = &Endpoint{client: c}
 	c.ReferenceData = &Endpoint{client: c}
 	c.Ariel = &Endpoint{client: c}
+	c.Analytics = &Endpoint{client: c}
+	c.Config = &Endpoint{client: c}
 
 	return c
 }

@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// SavedSearch is a QRadar SavedSearchID
+// SavedSearch is a QRadar SavedSearch
 type SavedSearch struct {
 	Aql           string `json:"aql"`
 	CreationDate  int    `json:"creation_date"`
@@ -27,7 +27,7 @@ type SavedSearch struct {
 	UID           string `json:"uid"`
 }
 
-// SavedSearchDependentTask is a QRadar SavedSearchTask
+// SavedSearchDependentTask is a QRadar SavedSearchDependentTask
 type SavedSearchDependentTask struct {
 	CancelledBy        string           `json:"cancelled_by"`
 	Completed          int              `json:"completed"`
@@ -83,7 +83,7 @@ type Searches struct {
 	SearchID                 string          `json:"search_id"`
 }
 
-// ErrorMessages is a QRadar TaskComponents
+// ErrorMessages is a QRadar ErrorMessages
 type ErrorMessages struct {
 	Code     string   `json:"code"`
 	Contexts []string `json:"contexts"`
@@ -91,7 +91,7 @@ type ErrorMessages struct {
 	Severity string   `json:"severity"`
 }
 
-// Events is a QRadar TaskComponents
+// Events is a QRadar Events
 type Events struct {
 	Sourceip   string `json:"sourceip"`
 	Starttime  int64  `json:"starttime"`
@@ -99,7 +99,7 @@ type Events struct {
 	Sourceport int    `json:"sourceport"`
 }
 
-// Snapshot is a QRadar TaskComponents
+// Snapshot is a QRadar TaskCompSnapshotonents
 type Snapshot struct {
 	Events []Events `json:"events"`
 }
@@ -144,6 +144,26 @@ type DatabasePaginatedResponse struct {
 	Min       int      `json:"min"`
 	Max       int      `json:"max"`
 	Databases []string `json:"offenses"`
+}
+
+// SearchesResults is the result of an AQL
+type SearchesResults struct {
+	Events []EventsResults `json:"events"`
+}
+
+// EventsResults is an AQL event
+type EventsResults struct {
+	SourceIP      string `json:"sourceIP"`
+	DestinationIP string `json:"destinationIP"`
+	Qid           int    `json:"qid"`
+}
+
+// SearchesResultsPaginatedResponse is the paginated response.
+type SearchesResultsPaginatedResponse struct {
+	Total           int                `json:"total"`
+	Min             int                `json:"min"`
+	Max             int                `json:"max"`
+	SearchesResults []*SearchesResults `json:"offenses"`
 }
 
 //------------------------------------------------------------------------------
@@ -266,8 +286,8 @@ func (endpoint *Endpoint) GetSavedSearchDependentTask(ctx context.Context, taskI
 	return response, nil
 }
 
-// GetSearches retrieves the dependent Ariel saved search task status
-func (endpoint *Endpoint) GetSearches(ctx context.Context, searchID string, prefer string) (*Searches, error) {
+// GetSearchesID retrieves status information for a search, based on the search ID parameter
+func (endpoint *Endpoint) GetSearchesID(ctx context.Context, searchID string, prefer string) (*Searches, error) {
 	// Options
 	options := []Option{}
 	if prefer != "" {
@@ -424,6 +444,83 @@ func (endpoint *Endpoint) ListDatabase(ctx context.Context, filter string, min, 
 
 	// Decode the response
 	err = json.NewDecoder(resp.Body).Decode(&response.Databases)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
+}
+
+// PostSearches retrieve the results of the Ariel search that is identified by the search ID
+func (endpoint *Endpoint) PostSearches(ctx context.Context, searchID string, saveResult bool, status string) (*Searches, error) {
+	// Options
+	options := []Option{}
+	options = append(options, WithParam("saveResult", strconv.FormatBool(saveResult)))
+
+	if status != "" {
+		options = append(options, WithParam("status", status))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(http.MethodPost, "/ariel/searches/"+searchID, options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Read the respsonse
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error while reading the request : %s", err)
+	}
+
+	// Prepare the response
+	var response *Searches
+
+	// Unmarshal the response
+	err = json.Unmarshal([]byte(body), &response)
+	if err != nil {
+		return nil, fmt.Errorf("Error while unmarshalling the response : %s. HTTP response is : %s", err, string(body))
+	}
+
+	return response, nil
+
+}
+
+// GetSearchesResults retrieve the the results of the Ariel search that is identified by the search ID
+func (endpoint *Endpoint) GetSearchesResults(ctx context.Context, searchID string, min, max int) (*SearchesResultsPaginatedResponse, error) {
+	// Options
+	options := []Option{}
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
+
+	// Do the request
+	resp, err := endpoint.client.do(http.MethodGet, "/ariel/searches/"+searchID+"/results", options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	if err != nil {
+		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
+	}
+
+	// Prepare the response
+	response := &SearchesResultsPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
+	}
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.SearchesResults)
 	if err != nil {
 		return nil, fmt.Errorf("error while decoding the response: %s", err)
 	}

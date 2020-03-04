@@ -21,7 +21,9 @@ type Endpoint struct {
 type Access interface{}
 
 // Analytics endpoint.
-type Analytics interface{}
+type Analytics interface {
+	ListRules(context.Context, string, string, int, int) (*RulesPaginatedResponse, error)
+}
 
 // AssetModel endpoint.
 type AssetModel interface{}
@@ -36,7 +38,11 @@ type BackupAndRestore interface{}
 type BandwithManager interface{}
 
 // Config endpoint.
-type Config interface{}
+type Config interface {
+	ListLogSources(context.Context, string, string, string, int, int) (*LogSourcesPaginatedResponse, error)
+	ListLogSourcesGroups(context.Context, string, string, int, int) (*LogSourcesGroupsPaginatedResponse, error)
+	ListLogSourceTypes(context.Context, string, string, int, int) (*LogSourcesTypesPaginatedResponse, error)
+}
 
 // DataClassification endpoint.
 type DataClassification interface{}
@@ -82,8 +88,10 @@ type Ariel interface {
 	GetSavedSearch(context.Context, int, string) (*SavedSearch, error)
 	ListSavedSearch(context.Context, string, string, int, int) (*SavedSearchPaginatedResponse, error)
 	GetSavedSearchDependentTask(context.Context, int, string) (*SavedSearchDependentTask, error)
-	GetSearches(context.Context, string, string) (*Searches, error)
+	GetSearchesID(context.Context, string, string) (*Searches, error)
 	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
 	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
 	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
+	GetSearchesResults(context.Context, string, int, int) (*SearchesResultsPaginatedResponse, error)
+	PostSearches(context.Context, string, bool, string) (*Searches, error)
 }
