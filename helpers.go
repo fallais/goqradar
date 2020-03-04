@@ -1,6 +1,7 @@
 package goqradar
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,13 +16,23 @@ func parseContentRange(cr string) (int, int, int, error) {
 	// Split min-max and total
 	split := strings.Split(trimed, "/")
 	if len(split) != 2 {
-		return 0, 0, 0, fmt.Errorf("error with content-range")
+		return 0, 0, 0, fmt.Errorf("error when splitting the content-range with slash")
+	}
+
+	if split[0] == "*" {
+		// Convert total
+		total, err := strconv.Atoi(split[1])
+		if err != nil {
+			return 0, 0, 0, fmt.Errorf("error while converting the total into int")
+		}
+
+		return 0, 0, total, nil
 	}
 
 	// Split min and max
 	minAndMax := strings.Split(split[0], "-")
 	if len(minAndMax) != 2 {
-		return 0, 0, 0, fmt.Errorf("error with content-range")
+		return 0, 0, 0, fmt.Errorf("error when splitting the content-range with dash")
 	}
 
 	// Convert min
@@ -45,7 +56,7 @@ func parseContentRange(cr string) (int, int, int, error) {
 	return min, max, total, nil
 }
 
-func (c *Client) do(method, endpoint string, opts ...Option) (*http.Response, error) {
+func (c *Client) do(ctx context.Context, method, endpoint string, opts ...Option) (*http.Response, error) {
 	// Options
 	var apiOptions options
 
@@ -76,6 +87,9 @@ func (c *Client) do(method, endpoint string, opts ...Option) (*http.Response, er
 	if err != nil {
 		return nil, err
 	}
+
+	// Add context
+	req = req.WithContext(ctx)
 
 	// Default headers
 	headers := http.Header{}

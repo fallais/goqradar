@@ -5,7 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
+
+//------------------------------------------------------------------------------
+// Structures
+//------------------------------------------------------------------------------
+
+type OffenseType struct {
+	Custom       bool   `json:"custom"`
+	DatabaseType string `json:"database_type"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	PropertyName string `json:"property_name"`
+}
 
 // Rule is a QRadar rule.
 type Rule struct {
@@ -69,6 +82,14 @@ type OffensePaginatedResponse struct {
 	Offenses []*Offense `json:"offenses"`
 }
 
+// OffenseTypesPaginatedResponse is the paginated response.
+type OffenseTypesPaginatedResponse struct {
+	Total        int            `json:"total"`
+	Min          int            `json:"min"`
+	Max          int            `json:"max"`
+	OffenseTypes []*OffenseType `json:"offense_types"`
+}
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
@@ -89,7 +110,7 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "siem/offenses", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -101,7 +122,7 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	// Process the Content-Range
 	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
 	if err != nil {
-		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
+		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
 	}
 
 	// Prepare the response
@@ -120,17 +141,126 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	return response, nil
 }
 
-// GetOffense returns the offense with given ID.
-func (endpoint *Endpoint) GetOffense(ctx context.Context, id, fields string) (*Offense, error) {
-	return nil, nil
+// GetOffense returns the offense by given ID.
+func (endpoint *Endpoint) GetOffense(ctx context.Context, id int, fields string) (*Offense, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses"+strconv.Itoa(id), options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Prepare the response
+	var response *Offense
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
 }
 
 // UpdateOffense with given ID.
-func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id string) ([]*Offense, int, error) {
+func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id int, assignedTo string) error {
+	return nil
+}
+
+// ListOffenseNotes returns the notes of the given offense.
+func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Note, int, error) {
 	return nil, 0, nil
 }
 
-// ListOffenseNotes ...
-func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Offense, int, error) {
+// CreateOffenseNote ...
+func (endpoint *Endpoint) CreateOffenseNote(ctx context.Context, id string) ([]*Note, int, error) {
 	return nil, 0, nil
+}
+
+//------------------------------------------------------------------------------
+
+// ListOffenseTypes returns the offenses type with given fields, filters and sort.
+func (endpoint *Endpoint) ListOffenseTypes(ctx context.Context, fields, filter, sort string, min, max int) (*OffenseTypesPaginatedResponse, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+	if filter != "" {
+		options = append(options, WithParam("filter", filter))
+	}
+	if sort != "" {
+		options = append(options, WithParam("sort", sort))
+	}
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses_types", options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	if err != nil {
+		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
+	}
+
+	// Prepare the response
+	response := &OffenseTypesPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
+	}
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.OffenseTypes)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
+}
+
+// GetOffenseType returns the offense type by ID with given fields.
+func (endpoint *Endpoint) GetOffenseType(ctx context.Context, id, fields string) (*OffenseType, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses_types"+id, options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Prepare the response
+	var response *OffenseType
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
 }

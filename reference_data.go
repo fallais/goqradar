@@ -218,7 +218,7 @@ func (endpoint *Endpoint) ListSets(ctx context.Context, fields string, filter st
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/reference_data/sets", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/reference_data/sets", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
