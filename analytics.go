@@ -50,7 +50,7 @@ func (endpoint *Endpoint) ListRules(ctx context.Context, fields string, filter s
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/analytics/rules", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/analytics/rules", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}

@@ -12,6 +12,7 @@ import (
 // Structures
 //------------------------------------------------------------------------------
 
+// OffenseType  is a QRadar offense type.
 type OffenseType struct {
 	Custom       bool   `json:"custom"`
 	DatabaseType string `json:"database_type"`

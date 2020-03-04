@@ -134,7 +134,7 @@ func (endpoint *Endpoint) ListLogSources(ctx context.Context, fields string, fil
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/config/event_sources/log_source_management/log_sources", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/config/event_sources/log_source_management/log_sources", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -178,7 +178,7 @@ func (endpoint *Endpoint) ListLogSourcesGroups(ctx context.Context, fields strin
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/config/event_sources/log_source_management/log_source_groups", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/config/event_sources/log_source_management/log_source_groups", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -222,7 +222,7 @@ func (endpoint *Endpoint) ListLogSourceTypes(ctx context.Context, fields string,
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/config/event_sources/log_source_management/log_source_types", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/config/event_sources/log_source_management/log_source_types", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}

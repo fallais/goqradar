@@ -462,7 +462,7 @@ func (endpoint *Endpoint) PostSearches(ctx context.Context, searchID string, sav
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodPost, "/ariel/searches/"+searchID, options...)
+	resp, err := endpoint.client.do(ctx, http.MethodPost, "/ariel/searches/"+searchID, options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -497,7 +497,7 @@ func (endpoint *Endpoint) GetSearchesResults(ctx context.Context, searchID strin
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
 	// Do the request
-	resp, err := endpoint.client.do(http.MethodGet, "/ariel/searches/"+searchID+"/results", options...)
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/ariel/searches/"+searchID+"/results", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
