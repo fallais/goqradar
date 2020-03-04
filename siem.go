@@ -12,6 +12,14 @@ import (
 // Structures
 //------------------------------------------------------------------------------
 
+type OffenseType struct {
+	Custom       bool   `json:"custom"`
+	DatabaseType string `json:"database_type"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	PropertyName string `json:"property_name"`
+}
+
 // Rule is a QRadar rule.
 type Rule struct {
 	ID   int    `json:"id"`
@@ -72,6 +80,14 @@ type OffensePaginatedResponse struct {
 	Min      int        `json:"min"`
 	Max      int        `json:"max"`
 	Offenses []*Offense `json:"offenses"`
+}
+
+// OffenseTypesPaginatedResponse is the paginated response.
+type OffenseTypesPaginatedResponse struct {
+	Total        int            `json:"total"`
+	Min          int            `json:"min"`
+	Max          int            `json:"max"`
+	OffenseTypes []*OffenseType `json:"offense_types"`
 }
 
 //------------------------------------------------------------------------------
@@ -168,4 +184,83 @@ func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*N
 // CreateOffenseNote ...
 func (endpoint *Endpoint) CreateOffenseNote(ctx context.Context, id string) ([]*Note, int, error) {
 	return nil, 0, nil
+}
+
+//------------------------------------------------------------------------------
+
+// ListOffenseTypes returns the offenses type with given fields, filters and sort.
+func (endpoint *Endpoint) ListOffenseTypes(ctx context.Context, fields, filter, sort string, min, max int) (*OffenseTypesPaginatedResponse, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+	if filter != "" {
+		options = append(options, WithParam("filter", filter))
+	}
+	if sort != "" {
+		options = append(options, WithParam("sort", sort))
+	}
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses_types", options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	if err != nil {
+		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
+	}
+
+	// Prepare the response
+	response := &OffenseTypesPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
+	}
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.OffenseTypes)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
+}
+
+// GetOffenseType returns the offense type by ID with given fields.
+func (endpoint *Endpoint) GetOffenseType(ctx context.Context, id, fields string) (*OffenseType, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses_types"+id, options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Prepare the response
+	var response *OffenseType
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
 }
