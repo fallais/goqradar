@@ -146,24 +146,17 @@ type DatabasePaginatedResponse struct {
 	Databases []string `json:"offenses"`
 }
 
-// SearchesResults is the result of an AQL
-type SearchesResults struct {
-	Events []EventsResults `json:"events"`
-}
-
-// EventsResults is an AQL event
-type EventsResults struct {
-	SourceIP      string `json:"sourceIP"`
-	DestinationIP string `json:"destinationIP"`
-	Qid           int    `json:"qid"`
+// SearchesResult is the result of an AQL
+type SearchesResult struct {
+	Events []interface{} `json:"events"`
 }
 
 // SearchesResultsPaginatedResponse is the paginated response.
 type SearchesResultsPaginatedResponse struct {
-	Total           int                `json:"total"`
-	Min             int                `json:"min"`
-	Max             int                `json:"max"`
-	SearchesResults []*SearchesResults `json:"offenses"`
+	Total           int               `json:"total"`
+	Min             int               `json:"min"`
+	Max             int               `json:"max"`
+	SearchesResults []*SearchesResult `json:"offenses"`
 }
 
 //------------------------------------------------------------------------------
@@ -451,18 +444,27 @@ func (endpoint *Endpoint) ListDatabase(ctx context.Context, filter string, min, 
 	return response, nil
 }
 
-// PostSearches retrieve the results of the Ariel search that is identified by the search ID
-func (endpoint *Endpoint) PostSearches(ctx context.Context, searchID string, saveResult bool, status string) (*Searches, error) {
+// PostSearches creates a new Ariel search as specified by the Ariel Query Language (AQL) query expression.
+func (endpoint *Endpoint) PostSearches(ctx context.Context, queryExpression string, savedSearchID int) (*Searches, error) {
 	// Options
 	options := []Option{}
-	options = append(options, WithParam("saveResult", strconv.FormatBool(saveResult)))
 
-	if status != "" {
-		options = append(options, WithParam("status", status))
+	if queryExpression != "" && savedSearchID > 0 {
+		return nil, fmt.Errorf("queryExpression and savedSearchID are mutually exclusive, you must chose only one of them")
+	}
+
+	// Add the query expression (mutually exclusive with saved search ID)
+	if queryExpression != "" {
+		options = append(options, WithParam("queryExpression", queryExpression))
+	}
+
+	// Add the saved search ID (mutually exclusive with query expression)
+	if savedSearchID > 0 {
+		options = append(options, WithParam("savedSearchID", strconv.Itoa(savedSearchID)))
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(ctx, http.MethodPost, "/ariel/searches/"+searchID, options...)
+	resp, err := endpoint.client.do(ctx, http.MethodPost, "/ariel/searches/", options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -491,7 +493,7 @@ func (endpoint *Endpoint) PostSearches(ctx context.Context, searchID string, sav
 }
 
 // GetSearchesResults retrieve the the results of the Ariel search that is identified by the search ID
-func (endpoint *Endpoint) GetSearchesResults(ctx context.Context, searchID string, min, max int) (*SearchesResultsPaginatedResponse, error) {
+func (endpoint *Endpoint) GetSearchesResults(ctx context.Context, searchID string, min, max int) (*SearchesResult, error) {
 	// Options
 	options := []Option{}
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
@@ -506,21 +508,11 @@ func (endpoint *Endpoint) GetSearchesResults(ctx context.Context, searchID strin
 		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
 	}
 
-	// Process the Content-Range
-	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
-	if err != nil {
-		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
-	}
-
 	// Prepare the response
-	response := &SearchesResultsPaginatedResponse{
-		Total: total,
-		Min:   min,
-		Max:   max,
-	}
+	var response *SearchesResult
 
 	// Decode the response
-	err = json.NewDecoder(resp.Body).Decode(&response.SearchesResults)
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, fmt.Errorf("error while decoding the response: %s", err)
 	}

@@ -42,6 +42,11 @@ type Config interface {
 	ListLogSources(context.Context, string, string, string, int, int) (*LogSourcesPaginatedResponse, error)
 	ListLogSourcesGroups(context.Context, string, string, int, int) (*LogSourcesGroupsPaginatedResponse, error)
 	ListLogSourceTypes(context.Context, string, string, int, int) (*LogSourcesTypesPaginatedResponse, error)
+	ListHosts(context.Context, string, string, int, int) (*HostsPaginatedResponse, error)
+	GetHost(context.Context, int, string) (*Host, error)
+	UpdateHost(context.Context, string, map[string]string, int) (*Host, error)
+	ListTunnels(context.Context, string, string, int, int, int) (*TunnelsPaginatedResponse, error)
+	GetLicensePool(context.Context, string) (*LicensePool, error)
 }
 
 // DataClassification endpoint.
@@ -94,6 +99,6 @@ type Ariel interface {
 	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
 	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
 	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
-	GetSearchesResults(context.Context, string, int, int) (*SearchesResultsPaginatedResponse, error)
-	PostSearches(context.Context, string, bool, string) (*Searches, error)
+	GetSearchesResults(context.Context, string, int, int) (*SearchesResult, error)
+	PostSearches(context.Context, string, int) (*Searches, error)
 }
