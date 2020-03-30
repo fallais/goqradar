@@ -2,7 +2,6 @@ package goqradar
 
 import (
 	"context"
-	"net/http"
 )
 
 //------------------------------------------------------------------------------
@@ -37,7 +36,16 @@ type BackupAndRestore interface{}
 type BandwithManager interface{}
 
 // Config endpoint.
-type Config interface{}
+type Config interface {
+	ListLogSources(context.Context, string, string, string, int, int) (*LogSourcesPaginatedResponse, error)
+	ListLogSourcesGroups(context.Context, string, string, int, int) (*LogSourcesGroupsPaginatedResponse, error)
+	ListLogSourceTypes(context.Context, string, string, int, int) (*LogSourcesTypesPaginatedResponse, error)
+	ListHosts(context.Context, string, string, int, int) (*HostsPaginatedResponse, error)
+	GetHost(context.Context, int, string) (*Host, error)
+	UpdateHost(context.Context, string, map[string]string, int) (*Host, error)
+	ListTunnels(context.Context, string, string, int, int, int) (*TunnelsPaginatedResponse, error)
+	GetLicensePool(context.Context, string) (*LicensePool, error)
+}
 
 // DataClassification endpoint.
 type DataClassification interface{}
@@ -78,12 +86,13 @@ type ReferenceData interface {
 
 // Ariel endpoint.
 type Ariel interface {
-	ListDatabases() (*http.Response, error)
-	GetDatabase(string) (*http.Response, error)
-	ListSearches() (*http.Response, error)
-	CreateSearch(string) (*http.Response, error)
-	GetSearch(string) (*http.Response, error)
-	GetSearchResults(string) (*http.Response, error)
-	UpdateSearch(string) (*http.Response, error)
-	DeleteSearch(string) (*http.Response, error)
+	GetSavedSearch(context.Context, int, string) (*SavedSearch, error)
+	ListSavedSearch(context.Context, string, string, int, int) (*SavedSearchPaginatedResponse, error)
+	GetSavedSearchDependentTask(context.Context, int, string) (*SavedSearchDependentTask, error)
+	GetSearchesID(context.Context, string, string) (*Searches, error)
+	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
+	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
+	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
+	PostSearches(context.Context, string, int) (*Searches, error)
+	GetSearchesResults(context.Context, string, int, int) (*SearchesResult, error)
 }
