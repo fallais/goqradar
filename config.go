@@ -179,19 +179,19 @@ type TunnelsPaginatedResponse struct {
 
 // LicensePool is pool of QRadar license.
 type LicensePool struct {
-	Eps Eps `json:"eps"`
-	Fpm Fpm `json:"fpm"`
+	EPS EPS `json:"eps"`
+	FPM FPM `json:"fpm"`
 }
 
-// Eps is an eps.
-type Eps struct {
+// EPS is an event per second.
+type EPS struct {
 	Allocated     int  `json:"allocated"`
 	Overallocated bool `json:"overallocated"`
 	Total         int  `json:"total"`
 }
 
-// Fpm is a fpm.
-type Fpm struct {
+// FPM is a flow per second.
+type FPM struct {
 	Allocated     int  `json:"allocated"`
 	Overallocated bool `json:"overallocated"`
 	Total         int  `json:"total"`
