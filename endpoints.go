@@ -18,7 +18,9 @@ type Endpoint struct {
 //------------------------------------------------------------------------------
 
 // Access endpoint.
-type Access interface{}
+type Access interface {
+	ListAccessAttempts(context.Context, string, string, string, int, int) (*LoginAttemptPaginatedResponse, error)
+}
 
 // Analytics endpoint.
 type Analytics interface {
@@ -26,13 +28,39 @@ type Analytics interface {
 }
 
 // AssetModel endpoint.
-type AssetModel interface{}
+type AssetModel interface {
+	ListAssets(context.Context, string, string, string, int, int) (*AssetsPaginatedResponse, error)
+	UpdateAsset(context.Context, string, map[string]map[string]string) (string, error)
+	ListAssetProperties(context.Context, string, string, int, int) (*AssetPropertiePaginatedResponse, error)
+	ListAssetsSavedSearchGroups(context.Context, string, string, int, int) (*AssetSavedSearchGroupPaginatedResponse, error)
+	GetAssetSavedSearchGroups(context.Context, int, string) (*AssetSavedSearchGroups, error)
+	UpdateAssetSavedSeachGroup(context.Context, int, string, map[string]map[string]string) (*AssetSavedSearchGroups, error)
+	DeleteAssetSavedSearchGroups(context.Context, int) error
+	ListSavedSearches(context.Context, string, string, int, int) (*SavedSearchesPaginatedResponse, error)
+	GetAssetSavedSearch(context.Context, int, string) (*SavedSearche, error)
+	UpdateAssetSavedSearch(context.Context, int, map[string]map[string]string) (*SavedSearche, error)
+	DeleteAssetSavedSearch(context.Context, int) error
+	ListAssetSavedSearches(context.Context, string, string, string, int, int) (*AssetBasedOnSavedSearchPaginatedResponse, error)
+}
 
 // Auth endpoint.
-type Auth interface{}
+type Auth interface {
+	Logout(context.Context, string) (bool, error)
+}
 
 // BackupAndRestore endpoint.
-type BackupAndRestore interface{}
+type BackupAndRestore interface {
+	ListBackups(context.Context, string, string, string, int, int) (*BackupsPaginatedResponse, error)
+	CreateBackup(context.Context, string, map[string]string) (*Backup, error)
+	GetBackup(context.Context, int, string) (*Backup, error)
+	UpdateBackup(context.Context, int, map[string]string) (*Backup, error)
+	DeleteBackup(context.Context, int) (*Backup, error)
+	ListRestore(context.Context, string, string, string, int, int) (*RestoresPaginatedResponse, error)
+	CreateRestore(context.Context, map[string]string) (*Restore, error)
+	GetRestore(context.Context, int, string) (*Restore, error)
+	UpdateRestore(context.Context, int, map[string]string) (*Restore, error)
+	DeleteRestore(context.Context, int) error
+}
 
 // BandwithManager endpoint.
 type BandwithManager interface{}
