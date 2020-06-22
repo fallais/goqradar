@@ -71,6 +71,8 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	c.Ariel = &Endpoint{client: c}
 	c.Analytics = &Endpoint{client: c}
 	c.Config = &Endpoint{client: c}
+	c.Auth = &Endpoint{client: c}
+	c.BackupAndRestore = &Endpoint{client: c}
 
 	return c
 }
