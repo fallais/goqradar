@@ -63,7 +63,18 @@ type BackupAndRestore interface {
 }
 
 // BandwithManager endpoint.
-type BandwithManager interface{}
+type BandwithManager interface {
+	ListConfigurations(context.Context, string, string, string, int, int) (*ConfigurationsPaginatedResponse, error)
+	CreateConfiguration(context.Context, map[string]string) error
+	GetConfiguration(context.Context, int, string) (*Configuration, error)
+	UpdateConfiguration(context.Context, int, map[string]string, string) (*Configuration, error)
+	DeleteConfiguration(context.Context, int) error
+	ListEgressFilters(context.Context, string, string, string, int, int) (*EgressFiltersPaginatedResponse, error)
+	CreateEgressFilter(context.Context, map[string]string) (*EgressFilter, error)
+	GetEgressFilter(context.Context, int, string) (*EgressFilter, error)
+	UpdateEgressFilter(context.Context, int, map[string]string, string) (*EgressFilter, error)
+	DeleteEgressFilter(context.Context, int) error
+}
 
 // Config endpoint.
 type Config interface {
@@ -93,7 +104,14 @@ type Health interface{}
 type HealthData interface{}
 
 // Help endpoint.
-type Help interface{}
+type Help interface {
+	ListEndpointDocumentationObjects(context.Context, string, string, int, int) (*EndpointDocumentationObjectsPaginatedResponse, error)
+	GetEndpointDocumentationObject(context.Context, int, string) (*EndpointDocumentationObject, error)
+	ListResourceDocumentationObjects(context.Context, string, string, int, int) (*ResourceDocumentationObjectsPaginatedResponse, error)
+	GetResourceDocumentationObject(context.Context, int, string) (*ResourceDocumentationObject, error)
+	ListVersionDocumentationObjects(context.Context, string, string, int, int) (*VersionDocumentationObjectsPaginatedResponse, error)
+	GetVersionDocumentationObject(context.Context, int, string) (*VersionDocumentationObject, error)
+}
 
 // SIEM endpoint.
 type SIEM interface {
@@ -101,6 +119,7 @@ type SIEM interface {
 	GetOffense(context.Context, int, string) (*Offense, error)
 	//UpdateOffense(context.Context, int, string, string, string, string) error
 	//ListOffenseNotes(context.Context, string) ([]*Offense, int, error)
+	//CreateOffenseNote(context.Context, string) ([]*Note, int, error)
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
 }
