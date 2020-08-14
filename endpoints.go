@@ -89,7 +89,20 @@ type Config interface {
 }
 
 // DataClassification endpoint.
-type DataClassification interface{}
+type DataClassification interface {
+	ListDSMEventMappings(context.Context, string, string, int, int) (*DSMEventMappingsPaginatedResponse, error)
+	CreateDSMEventMapping(context.Context, map[string]string, string) (*DSMEventMapping, error)
+	GetDSMEventMapping(context.Context, int, string) (*DSMEventMapping, error)
+	UpdateDSMEventMapping(context.Context, int, map[string]string, string) (*DSMEventMapping, error)
+	ListHLCategories(context.Context, string, string, string, int, int) (*HLCategoriesPaginatedResponse, error)
+	GetHLCategory(context.Context, int, string) (*HLCategory, error)
+	ListLLCategories(context.Context, string, string, string, int, int) (*LLCategoriesPaginatedResponse, error)
+	GetLLCategory(context.Context, int, string) (*LLCategory, error)
+	ListQIDRecords(context.Context, string, string, int, int) (*QIDRecordsPaginatedResponse, error)
+	CreateQIDRecord(context.Context, map[string]string, string) (*QIDRecord, error)
+	GetQIDRecord(context.Context, int, string) (*QIDRecordBYID, error)
+	UpdateQIDRecord(context.Context, int, map[string]string, string) (*QIDRecord, error)
+}
 
 // Forensics endpoint.
 type Forensics interface{}
