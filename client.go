@@ -73,6 +73,9 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 	c.Config = &Endpoint{client: c}
 	c.Auth = &Endpoint{client: c}
 	c.BackupAndRestore = &Endpoint{client: c}
+	c.BandwithManager = &Endpoint{client: c}
+	c.DataClassification = &Endpoint{client: c}
+	c.Help = &Endpoint{client: c}
 
 	return c
 }
