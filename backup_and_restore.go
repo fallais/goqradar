@@ -120,7 +120,7 @@ func (endpoint *Endpoint) ListBackups(ctx context.Context, fields, filter, sort 
 }
 
 // CreateBackup by name
-func (endpoint *Endpoint) CreateBackup(ctx context.Context, backupType string, data map[string]string) (*Backup, error) {
+func (endpoint *Endpoint) CreateBackup(ctx context.Context, backupType, fields string, data map[string]string) (*Backup, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -146,6 +146,7 @@ func (endpoint *Endpoint) CreateBackup(ctx context.Context, backupType string, d
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("backup_type", backupType)
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -209,7 +210,7 @@ func (endpoint *Endpoint) GetBackup(ctx context.Context, id int, fields string) 
 }
 
 // UpdateBackup by name
-func (endpoint *Endpoint) UpdateBackup(ctx context.Context, id int, data map[string]string) (*Backup, error) {
+func (endpoint *Endpoint) UpdateBackup(ctx context.Context, id int, data map[string]string, fields string) (*Backup, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -235,6 +236,7 @@ func (endpoint *Endpoint) UpdateBackup(ctx context.Context, id int, data map[str
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -366,7 +368,7 @@ func (endpoint *Endpoint) ListRestore(ctx context.Context, fields, filter, sort 
 }
 
 // CreateRestore in the pending state
-func (endpoint *Endpoint) CreateRestore(ctx context.Context, data map[string]string) (*Restore, error) {
+func (endpoint *Endpoint) CreateRestore(ctx context.Context, data map[string]string, fields string) (*Restore, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -391,6 +393,7 @@ func (endpoint *Endpoint) CreateRestore(ctx context.Context, data map[string]str
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -454,7 +457,7 @@ func (endpoint *Endpoint) GetRestore(ctx context.Context, id int, fields string)
 }
 
 // UpdateRestore by ID
-func (endpoint *Endpoint) UpdateRestore(ctx context.Context, id int, data map[string]string) (*Restore, error) {
+func (endpoint *Endpoint) UpdateRestore(ctx context.Context, id int, data map[string]string, fields string) (*Restore, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -480,6 +483,7 @@ func (endpoint *Endpoint) UpdateRestore(ctx context.Context, id int, data map[st
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

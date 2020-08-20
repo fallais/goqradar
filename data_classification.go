@@ -177,6 +177,7 @@ func (endpoint *Endpoint) CreateDSMEventMapping(ctx context.Context, data map[st
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -273,6 +274,7 @@ func (endpoint *Endpoint) UpdateDSMEventMapping(ctx context.Context, id int, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -541,6 +543,7 @@ func (endpoint *Endpoint) CreateQIDRecord(ctx context.Context, data map[string]s
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -637,6 +640,7 @@ func (endpoint *Endpoint) UpdateQIDRecord(ctx context.Context, id int, data map[
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("fields", fields)
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
