@@ -170,7 +170,9 @@ func (endpoint *Endpoint) CreateRecovery(ctx context.Context, data map[string]st
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -418,7 +420,9 @@ func (endpoint *Endpoint) CreateCase(ctx context.Context, data map[string]string
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

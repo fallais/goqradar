@@ -138,7 +138,9 @@ func (endpoint *Endpoint) CreateConfiguration(ctx context.Context, data map[stri
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	_, err = endpoint.client.client.Do(req)
@@ -213,7 +215,9 @@ func (endpoint *Endpoint) UpdateConfiguration(ctx context.Context, id int, data 
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -350,7 +354,9 @@ func (endpoint *Endpoint) CreateEgressFilter(ctx context.Context, data map[strin
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -445,7 +451,9 @@ func (endpoint *Endpoint) UpdateEgressFilter(ctx context.Context, id int, data m
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

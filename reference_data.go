@@ -129,7 +129,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRM(ctx context.Context, name string, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -279,7 +281,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRS(ctx context.Context, name string, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -390,7 +394,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRT(ctx context.Context, name, fields str
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -491,7 +497,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRMM(ctx context.Context, name string, da
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

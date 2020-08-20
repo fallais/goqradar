@@ -443,7 +443,9 @@ func (endpoint *Endpoint) UpdateHost(ctx context.Context, fields string, data ma
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

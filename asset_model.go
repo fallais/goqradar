@@ -449,7 +449,9 @@ func (endpoint *Endpoint) UpdateAssetSavedSeachGroup(ctx context.Context, name i
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -625,7 +627,9 @@ func (endpoint *Endpoint) UpdateAssetSavedSearch(ctx context.Context, name int, 
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

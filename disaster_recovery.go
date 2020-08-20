@@ -100,7 +100,9 @@ func (endpoint *Endpoint) CreateArielCopyProfille(ctx context.Context, data map[
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	_, err = endpoint.client.client.Do(req)
@@ -180,7 +182,9 @@ func (endpoint *Endpoint) UpdateArielCopyProfile(ctx context.Context, id int, da
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("fields", fields)
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
