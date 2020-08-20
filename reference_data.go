@@ -129,6 +129,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRM(ctx context.Context, name string, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -156,7 +159,7 @@ func (endpoint *Endpoint) UpdateBulkLoadRM(ctx context.Context, name string, dat
 }
 
 // DeleteReferenceMap by name
-func (endpoint *Endpoint) DeleteReferenceMap(ctx context.Context, name string, fields string, purgeOnly bool) error {
+func (endpoint *Endpoint) DeleteReferenceMap(ctx context.Context, name, fields, namespace string, purgeOnly bool) error {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -167,6 +170,8 @@ func (endpoint *Endpoint) DeleteReferenceMap(ctx context.Context, name string, f
 	reqURL.Path += name
 	parameters := url.Values{}
 	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))
+	parameters.Add("fields", fields)
+	parameters.Add("namespace", namespace)
 	reqURL.RawQuery = parameters.Encode()
 
 	// Create the request
@@ -276,6 +281,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRS(ctx context.Context, name string, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -303,7 +311,7 @@ func (endpoint *Endpoint) UpdateBulkLoadRS(ctx context.Context, name string, dat
 }
 
 // DeleteReferenceSet removes a reference set or purges its contents
-func (endpoint *Endpoint) DeleteReferenceSet(ctx context.Context, name string, fields string, purgeOnly bool) error {
+func (endpoint *Endpoint) DeleteReferenceSet(ctx context.Context, name, fields, namespace string, purgeOnly bool) error {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -314,6 +322,8 @@ func (endpoint *Endpoint) DeleteReferenceSet(ctx context.Context, name string, f
 	reqURL.Path += name
 	parameters := url.Values{}
 	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))
+	parameters.Add("fields", fields)
+	parameters.Add("namespace", namespace)
 	reqURL.RawQuery = parameters.Encode()
 
 	// Create the request
@@ -358,8 +368,8 @@ func (endpoint *Endpoint) ListTables(ctx context.Context, fields string, filter 
 }
 
 // UpdateBulkLoadRT by name
-func (endpoint *Endpoint) UpdateBulkLoadRT(ctx context.Context, name string, data map[string]map[string]string, fields string) (*BulkTable, error) {
-	// Prepare the URL
+func (endpoint *Endpoint) UpdateBulkLoadRT(ctx context.Context, name, fields string, data map[string]map[string]string) (*BulkTable, error) {
+	// Prepare the URLg
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
 	if err != nil {
@@ -384,6 +394,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRT(ctx context.Context, name string, dat
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -411,7 +424,7 @@ func (endpoint *Endpoint) UpdateBulkLoadRT(ctx context.Context, name string, dat
 }
 
 // DeleteReferenceTable by name
-func (endpoint *Endpoint) DeleteReferenceTable(ctx context.Context, name string, fields string, purgeOnly bool) error {
+func (endpoint *Endpoint) DeleteReferenceTable(ctx context.Context, name, fields, namespace string, purgeOnly bool) error {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -422,6 +435,8 @@ func (endpoint *Endpoint) DeleteReferenceTable(ctx context.Context, name string,
 	reqURL.Path += name
 	parameters := url.Values{}
 	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))
+	parameters.Add("fields", fields)
+	parameters.Add("namespace", namespace)
 	reqURL.RawQuery = parameters.Encode()
 
 	// Create the request
@@ -482,6 +497,9 @@ func (endpoint *Endpoint) UpdateBulkLoadRMM(ctx context.Context, name string, da
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -509,7 +527,7 @@ func (endpoint *Endpoint) UpdateBulkLoadRMM(ctx context.Context, name string, da
 }
 
 // DeleteReferenceMapOfMap by name
-func (endpoint *Endpoint) DeleteReferenceMapOfMap(ctx context.Context, name string, fields string, purgeOnly bool) error {
+func (endpoint *Endpoint) DeleteReferenceMapOfMap(ctx context.Context, name, fields, namespace string, purgeOnly bool) error {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -520,6 +538,8 @@ func (endpoint *Endpoint) DeleteReferenceMapOfMap(ctx context.Context, name stri
 	reqURL.Path += name
 	parameters := url.Values{}
 	parameters.Add("purge_only", strconv.FormatBool(purgeOnly))
+	parameters.Add("fields", fields)
+	parameters.Add("namespace", namespace)
 	reqURL.RawQuery = parameters.Encode()
 
 	// Create the request

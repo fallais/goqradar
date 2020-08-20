@@ -35,13 +35,22 @@ type Client struct {
 	BandwithManager    BandwithManager
 	Config             Config
 	DataClassification DataClassification
+	DisasterRecovery   DisasterRecovery
+	DynamicSearch      DynamicSearch
 	Forensics          Forensics
 	GUIAppFramework    GUIAppFramework
 	Health             Health
 	HealthData         HealthData
 	Help               Help
+	Qni                Qni
+	Qrm                Qrm
+	Qvm                Qvm
 	ReferenceData      ReferenceData
+	Scanner            Scanner
+	Services           Services
 	SIEM               SIEM
+	StagedConfig       StagedConfig
+	System             System
 }
 
 //------------------------------------------------------------------------------
@@ -64,18 +73,29 @@ func NewClient(httpClient *http.Client, baseURL, token string) *Client {
 
 	// Add the endpoints
 	c.Access = &Endpoint{client: c}
-	//c.Ariel = &Endpoint{client: c}
-	c.AssetModel = &Endpoint{client: c}
-	c.SIEM = &Endpoint{client: c}
-	c.ReferenceData = &Endpoint{client: c}
-	c.Ariel = &Endpoint{client: c}
 	c.Analytics = &Endpoint{client: c}
-	c.Config = &Endpoint{client: c}
+	c.Ariel = &Endpoint{client: c}
 	c.Auth = &Endpoint{client: c}
+	c.AssetModel = &Endpoint{client: c}
 	c.BackupAndRestore = &Endpoint{client: c}
 	c.BandwithManager = &Endpoint{client: c}
+	c.Config = &Endpoint{client: c}
 	c.DataClassification = &Endpoint{client: c}
+	c.DisasterRecovery = &Endpoint{client: c}
+	c.DynamicSearch = &Endpoint{client: c}
+	c.Forensics = &Endpoint{client: c}
+	c.GUIAppFramework = &Endpoint{client: c}
+	c.HealthData = &Endpoint{client: c}
 	c.Help = &Endpoint{client: c}
+	c.Qni = &Endpoint{client: c}
+	c.Qrm = &Endpoint{client: c}
+	c.Qvm = &Endpoint{client: c}
+	c.ReferenceData = &Endpoint{client: c}
+	c.Scanner = &Endpoint{client: c}
+	c.Services = &Endpoint{client: c}
+	c.SIEM = &Endpoint{client: c}
+	c.StagedConfig = &Endpoint{client: c}
+	c.System = &Endpoint{client: c}
 
 	return c
 }

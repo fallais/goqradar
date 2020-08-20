@@ -27,6 +27,19 @@ type Analytics interface {
 	ListRules(context.Context, string, string, int, int) (*RulesPaginatedResponse, error)
 }
 
+// Ariel endpoint.
+type Ariel interface {
+	GetSavedSearch(context.Context, int, string) (*SavedSearch, error)
+	ListSavedSearch(context.Context, string, string, int, int) (*SavedSearchPaginatedResponse, error)
+	GetSavedSearchDependentTask(context.Context, int, string) (*SavedSearchDependentTask, error)
+	GetSearchesID(context.Context, string, string) (*Searches, error)
+	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
+	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
+	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
+	GetSearchesResults(context.Context, string, int, int) (*SearchesResult, error)
+	PostSearches(context.Context, string, int) (*Searches, error)
+}
+
 // AssetModel endpoint.
 type AssetModel interface {
 	ListAssets(context.Context, string, string, string, int, int) (*AssetsPaginatedResponse, error)
@@ -38,7 +51,7 @@ type AssetModel interface {
 	DeleteAssetSavedSearchGroups(context.Context, int) error
 	ListSavedSearches(context.Context, string, string, int, int) (*SavedSearchesPaginatedResponse, error)
 	GetAssetSavedSearch(context.Context, int, string) (*SavedSearche, error)
-	UpdateAssetSavedSearch(context.Context, int, map[string]map[string]string) (*SavedSearche, error)
+	UpdateAssetSavedSearch(context.Context, int, map[string]map[string]string, string) (*SavedSearche, error)
 	DeleteAssetSavedSearch(context.Context, int) error
 	ListAssetSavedSearches(context.Context, string, string, string, int, int) (*AssetBasedOnSavedSearchPaginatedResponse, error)
 }
@@ -51,26 +64,26 @@ type Auth interface {
 // BackupAndRestore endpoint.
 type BackupAndRestore interface {
 	ListBackups(context.Context, string, string, string, int, int) (*BackupsPaginatedResponse, error)
-	CreateBackup(context.Context, string, map[string]string) (*Backup, error)
+	CreateBackup(context.Context, string, string, map[string]string) (*Backup, error)
 	GetBackup(context.Context, int, string) (*Backup, error)
-	UpdateBackup(context.Context, int, map[string]string) (*Backup, error)
+	UpdateBackup(context.Context, int, map[string]string, string) (*Backup, error)
 	DeleteBackup(context.Context, int) (*Backup, error)
 	ListRestore(context.Context, string, string, string, int, int) (*RestoresPaginatedResponse, error)
-	CreateRestore(context.Context, map[string]string) (*Restore, error)
+	CreateRestore(context.Context, map[string]string, string) (*Restore, error)
 	GetRestore(context.Context, int, string) (*Restore, error)
-	UpdateRestore(context.Context, int, map[string]string) (*Restore, error)
+	UpdateRestore(context.Context, int, map[string]string, string) (*Restore, error)
 	DeleteRestore(context.Context, int) error
 }
 
 // BandwithManager endpoint.
 type BandwithManager interface {
 	ListConfigurations(context.Context, string, string, string, int, int) (*ConfigurationsPaginatedResponse, error)
-	CreateConfiguration(context.Context, map[string]string) error
+	CreateConfiguration(context.Context, map[string]string, string) error
 	GetConfiguration(context.Context, int, string) (*Configuration, error)
 	UpdateConfiguration(context.Context, int, map[string]string, string) (*Configuration, error)
 	DeleteConfiguration(context.Context, int) error
 	ListEgressFilters(context.Context, string, string, string, int, int) (*EgressFiltersPaginatedResponse, error)
-	CreateEgressFilter(context.Context, map[string]string) (*EgressFilter, error)
+	CreateEgressFilter(context.Context, map[string]string, string) (*EgressFilter, error)
 	GetEgressFilter(context.Context, int, string) (*EgressFilter, error)
 	UpdateEgressFilter(context.Context, int, map[string]string, string) (*EgressFilter, error)
 	DeleteEgressFilter(context.Context, int) error
@@ -104,8 +117,41 @@ type DataClassification interface {
 	UpdateQIDRecord(context.Context, int, map[string]string, string) (*QIDRecord, error)
 }
 
+// DisasterRecovery endpoint.
+type DisasterRecovery interface {
+	ListArielCopyProfiles(context.Context, string, string) ([]*ArielCopyProfile, error)
+	CreateArielCopyProfille(context.Context, map[string]interface{}, string) error
+	GetArielCopyProfile(context.Context, int, string) (*ArielCopyProfile, error)
+	UpdateArielCopyProfile(context.Context, int, map[string]interface{}, string) (*ArielCopyProfile, error)
+	DeleteArielCopyProfile(context.Context, int) error
+}
+
+// DynamicSearch endpoint.
+type DynamicSearch interface {
+	ListSchemas(context.Context, string, string, int, int) (*SchemasPaginatedResponse, error)
+	GetSchemas(context.Context, string, string) (*Schemas, error)
+	ListFields(context.Context, string, string, string, int, int) (*FieldsPaginatedResponse, error)
+	ListFunctions(context.Context, string, string, string, int, int) (*FunctionsPaginatedResponse, error)
+	ListOperators(context.Context, string, string, string, int, int) (*OperatorsPaginatedResponse, error)
+	ListDynamicSearches(context.Context, string, string, int, int) (*DynamicSearchesPaginatedResponse, error)
+	CreateDynamicSearch(context.Context, map[string]interface{}) (*PostedSearch, error)
+	GetDynamicSearch(context.Context, string, string) (*Search, error)
+	DeleteDynamicSearch(context.Context, string) error
+	GetDynamicSearchResult(context.Context, string) (*SearchResult, error)
+}
+
 // Forensics endpoint.
-type Forensics interface{}
+type Forensics interface {
+	ListRecoveries(context.Context, string, string, int, int) (*RecoveriesPaginatedResponse, error)
+	CreateRecovery(context.Context, map[string]string, string) (*Recovery, error)
+	GetRecovery(context.Context, int, string) (*Recovery, error)
+	ListRecoveryTasks(context.Context, string, string, int, int) (*RecoveryTasksPaginatedResponse, error)
+	GetRecoveryTask(context.Context, int, string) (*RecoveryTask, error)
+	GetCaseCreatetask(context.Context, int, string) (*CaseCreateTask, error)
+	ListCases(context.Context, string, string, int, int) (*CasesPaginatedResponse, error)
+	CreateCase(context.Context, map[string]string, string) (*CreateCase, error)
+	GetCase(context.Context, int, string) (*Case, error)
+}
 
 // GUIAppFramework endpoint.
 type GUIAppFramework interface{}
@@ -114,7 +160,11 @@ type GUIAppFramework interface{}
 type Health interface{}
 
 // HealthData endpoint.
-type HealthData interface{}
+type HealthData interface {
+	GetSecurityDataCount(context.Context, string) (*SecurityDataCount, error)
+	ListTopOffenses(context.Context, string, string, int, int) (*TopOffensesPaginatedResponse, error)
+	ListTopRules(context.Context, string, string, int, int) (*TopRulesPaginatedResponse, error)
+}
 
 // Help endpoint.
 type Help interface {
@@ -126,6 +176,34 @@ type Help interface {
 	GetVersionDocumentationObject(context.Context, int, string) (*VersionDocumentationObject, error)
 }
 
+// Qni endpoint.
+type Qni interface{}
+
+// Qrm endpoint.
+type Qrm interface{}
+
+// Qvm endpoint.
+type Qvm interface{}
+
+// ReferenceData endpoint.
+type ReferenceData interface {
+	UpdateBulkLoadRM(context.Context, string, map[string]string, string) (*BulkMap, error)
+	DeleteReferenceMap(context.Context, string, string, string, bool) error
+	ListSets(context.Context, string, string, int, int) (*ListSetsPaginatedResponse, error)
+	UpdateBulkLoadRS(context.Context, string, []string, string) (*Set, error)
+	DeleteReferenceSet(context.Context, string, string, string, bool) error
+	UpdateBulkLoadRT(context.Context, string, string, map[string]map[string]string) (*BulkTable, error)
+	DeleteReferenceTable(context.Context, string, string, string, bool) error
+	UpdateBulkLoadRMM(context.Context, string, map[string]map[string]string, string) (*BulkMapOfMap, error)
+	DeleteReferenceMapOfMap(context.Context, string, string, string, bool) error
+}
+
+// Scanner endpoint.
+type Scanner interface{}
+
+// Services endpoint.
+type Services interface{}
+
 // SIEM endpoint.
 type SIEM interface {
 	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
@@ -135,30 +213,11 @@ type SIEM interface {
 	//CreateOffenseNote(context.Context, string) ([]*Note, int, error)
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
+	ListLocalDestinationAddress(context.Context, string, string, int, int) (*LocalDestinationAddressesPaginatedResponse, error)
 }
 
-// ReferenceData endpoint.
-type ReferenceData interface {
-	UpdateBulkLoadRM(context.Context, string, map[string]string, string) (*BulkMap, error)
-	DeleteReferenceMap(context.Context, string, string, bool) error
-	ListSets(context.Context, string, string, int, int) (*ListSetsPaginatedResponse, error)
-	UpdateBulkLoadRS(context.Context, string, []string, string) (*Set, error)
-	DeleteReferenceSet(context.Context, string, string, bool) error
-	UpdateBulkLoadRT(context.Context, string, map[string]map[string]string, string) (*BulkTable, error)
-	DeleteReferenceTable(context.Context, string, string, bool) error
-	UpdateBulkLoadRMM(context.Context, string, map[string]map[string]string, string) (*BulkMapOfMap, error)
-	DeleteReferenceMapOfMap(context.Context, string, string, bool) error
-}
+// StagedConfig endpoint.
+type StagedConfig interface{}
 
-// Ariel endpoint.
-type Ariel interface {
-	GetSavedSearch(context.Context, int, string) (*SavedSearch, error)
-	ListSavedSearch(context.Context, string, string, int, int) (*SavedSearchPaginatedResponse, error)
-	GetSavedSearchDependentTask(context.Context, int, string) (*SavedSearchDependentTask, error)
-	GetSearchesID(context.Context, string, string) (*Searches, error)
-	ListSearches(context.Context, string, string, int, int) (*SearchesPaginatedResponse, error)
-	GetDatabase(context.Context, string, string, string, int, int) (*Database, error)
-	ListDatabase(context.Context, string, int, int) (*DatabasePaginatedResponse, error)
-	GetSearchesResults(context.Context, string, int, int) (*SearchesResult, error)
-	PostSearches(context.Context, string, int) (*Searches, error)
-}
+// System endpoint.
+type System interface{}

@@ -113,7 +113,7 @@ func (endpoint *Endpoint) ListConfigurations(ctx context.Context, fields, filter
 }
 
 // CreateConfiguration creates a bandwidth manager configuration
-func (endpoint *Endpoint) CreateConfiguration(ctx context.Context, data map[string]string) error {
+func (endpoint *Endpoint) CreateConfiguration(ctx context.Context, data map[string]string, fields string) error {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -138,6 +138,9 @@ func (endpoint *Endpoint) CreateConfiguration(ctx context.Context, data map[stri
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	_, err = endpoint.client.client.Do(req)
@@ -186,11 +189,6 @@ func (endpoint *Endpoint) GetConfiguration(ctx context.Context, id int, fields s
 
 // UpdateConfiguration by id
 func (endpoint *Endpoint) UpdateConfiguration(ctx context.Context, id int, data map[string]string, fields string) (*Configuration, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
@@ -217,6 +215,9 @@ func (endpoint *Endpoint) UpdateConfiguration(ctx context.Context, id int, data 
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -328,7 +329,7 @@ func (endpoint *Endpoint) ListEgressFilters(ctx context.Context, fields, filter,
 }
 
 // CreateEgressFilter creates a bandwidth manager filter
-func (endpoint *Endpoint) CreateEgressFilter(ctx context.Context, data map[string]string) (*EgressFilter, error) {
+func (endpoint *Endpoint) CreateEgressFilter(ctx context.Context, data map[string]string, fields string) (*EgressFilter, error) {
 	// Prepare the URL
 	var reqURL *url.URL
 	reqURL, err := url.Parse(endpoint.client.BaseURL)
@@ -353,6 +354,9 @@ func (endpoint *Endpoint) CreateEgressFilter(ctx context.Context, data map[strin
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)
@@ -447,6 +451,9 @@ func (endpoint *Endpoint) UpdateEgressFilter(ctx context.Context, id int, data m
 	req.Header.Set("SEC", endpoint.client.Token)
 	req.Header.Set("Version", endpoint.client.Version)
 	req.Header.Set("Content-Type", "application/json")
+	if fields != "" {
+		req.Header.Set("fields", fields)
+	}
 
 	// Do the request
 	resp, err := endpoint.client.client.Do(req)

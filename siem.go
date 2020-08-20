@@ -91,6 +91,28 @@ type OffenseTypesPaginatedResponse struct {
 	OffenseTypes []*OffenseType `json:"offense_types"`
 }
 
+// LocalDestinationAddress is a QRadar local destination address
+type LocalDestinationAddress []struct {
+	DomainID           int    `json:"domain_id"`
+	EventFlowCount     int    `json:"event_flow_count"`
+	FirstEventFlowSeen int    `json:"first_event_flow_seen"`
+	ID                 int    `json:"id"`
+	LastEventFlowSeen  int    `json:"last_event_flow_seen"`
+	LocalDestinationIP string `json:"local_destination_ip"`
+	Magnitude          int    `json:"magnitude"`
+	Network            string `json:"network"`
+	OffenseIds         []int  `json:"offense_ids"`
+	SourceAddressIds   []int  `json:"source_address_ids"`
+}
+
+// LocalDestinationAddressesPaginatedResponse is the paginated response.
+type LocalDestinationAddressesPaginatedResponse struct {
+	Total                     int                        `json:"total"`
+	Min                       int                        `json:"min"`
+	Max                       int                        `json:"max"`
+	LocalDestinationAddresses []*LocalDestinationAddress `json:"offense_types"`
+}
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
@@ -259,6 +281,50 @@ func (endpoint *Endpoint) GetOffenseType(ctx context.Context, id, fields string)
 
 	// Decode the response
 	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
+}
+
+// ListLocalDestinationAddress returns the local destination addresses with given fields, filters and sort.
+func (endpoint *Endpoint) ListLocalDestinationAddress(ctx context.Context, fields, filter string, min, max int) (*LocalDestinationAddressesPaginatedResponse, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+	if filter != "" {
+		options = append(options, WithParam("filter", filter))
+	}
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/siem/local_destination_addresses", options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	if err != nil {
+		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
+	}
+
+	// Prepare the response
+	response := &LocalDestinationAddressesPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
+	}
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.LocalDestinationAddresses)
 	if err != nil {
 		return nil, fmt.Errorf("error while decoding the response: %s", err)
 	}
