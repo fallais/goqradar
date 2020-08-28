@@ -364,7 +364,7 @@ func (endpoint *Endpoint) CreateEgressFilter(ctx context.Context, data map[strin
 		return nil, fmt.Errorf("Error while doing the request : %s", err)
 	}
 
-	// Read the respsonse
+	// Read the response
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error while reading the request : %s", err)
@@ -420,11 +420,6 @@ func (endpoint *Endpoint) GetEgressFilter(ctx context.Context, id int, fields st
 
 // UpdateEgressFilter by id
 func (endpoint *Endpoint) UpdateEgressFilter(ctx context.Context, id int, data map[string]string, fields string) (*EgressFilter, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL

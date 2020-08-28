@@ -147,11 +147,6 @@ func (endpoint *Endpoint) ListDSMEventMappings(ctx context.Context, fields, filt
 
 // CreateDSMEventMapping creates a DSM Event Mapping
 func (endpoint *Endpoint) CreateDSMEventMapping(ctx context.Context, data map[string]string, fields string) (*DSMEventMapping, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
@@ -245,11 +240,6 @@ func (endpoint *Endpoint) GetDSMEventMapping(ctx context.Context, id int, fields
 
 // UpdateDSMEventMapping by id
 func (endpoint *Endpoint) UpdateDSMEventMapping(ctx context.Context, id int, data map[string]string, fields string) (*DSMEventMapping, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
@@ -517,11 +507,6 @@ func (endpoint *Endpoint) ListQIDRecords(ctx context.Context, fields, filter str
 
 // CreateQIDRecord creates a QID Record
 func (endpoint *Endpoint) CreateQIDRecord(ctx context.Context, data map[string]string, fields string) (*QIDRecord, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
@@ -615,11 +600,6 @@ func (endpoint *Endpoint) GetQIDRecord(ctx context.Context, id int, fields strin
 
 // UpdateQIDRecord by id
 func (endpoint *Endpoint) UpdateQIDRecord(ctx context.Context, id int, data map[string]string, fields string) (*QIDRecord, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
