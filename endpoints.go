@@ -209,7 +209,7 @@ type SIEM interface {
 	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
 	GetOffense(context.Context, int, string) (*Offense, error)
 	//UpdateOffense(context.Context, int, string, string, string, string) error
-	//ListOffenseNotes(context.Context, string) ([]*Offense, int, error)
+	ListOffenseNotes(context.Context, string) ([]*Note, int, error)
 	//CreateOffenseNote(context.Context, string) ([]*Note, int, error)
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
