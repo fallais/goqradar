@@ -201,7 +201,29 @@ func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id int, assignedTo 
 
 // ListOffenseNotes returns the notes of the given offense.
 func (endpoint *Endpoint) ListOffenseNotes(ctx context.Context, id string) ([]*Note, int, error) {
-	return nil, 0, nil
+	// Options
+	options := []Option{}
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "siem/offenses/"+id+"/notes", options...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, 0, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Prepare the response
+	var response []*Note
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, 0, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, len(response), nil
 }
 
 // CreateOffenseNote ...
