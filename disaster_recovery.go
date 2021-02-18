@@ -151,11 +151,6 @@ func (endpoint *Endpoint) GetArielCopyProfile(ctx context.Context, id int, field
 
 // UpdateArielCopyProfile by id
 func (endpoint *Endpoint) UpdateArielCopyProfile(ctx context.Context, id int, data map[string]interface{}, fields string) (*ArielCopyProfile, error) {
-	// Options
-	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("fields", fields))
-	}
 
 	// Prepare the URL
 	var reqURL *url.URL
