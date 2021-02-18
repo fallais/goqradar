@@ -247,6 +247,12 @@ type SIEM interface {
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
 	ListLocalDestinationAddress(context.Context, string, string, int, int) (*LocalDestinationAddressesPaginatedResponse, error)
+	GetLocalDestinationAddress(context.Context, int, string) (*LocalDestinationAddress, error)
+	ListSourceAddresses(context.Context, string, string, int, int) (*SourceAddressesPaginatedResponse, error)
+	GetSourceAddress(context.Context, int, string) (*SourceAddress, error)
+	ListOffenseClosingReasons(context.Context, string, string, bool, bool, int, int) (*OffenseClosingReasonsPaginatedResponse, error)
+	CreateOffenseClosingReason(context.Context, string, string) (*OffenseClosingReason, error)
+	GetOffenseClosingReason(context.Context, int, string) (*OffenseClosingReason, error)
 }
 
 // StagedConfig endpoint.
