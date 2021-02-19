@@ -109,9 +109,6 @@ type LocalDestinationAddress struct {
 
 // LocalDestinationAddressesPaginatedResponse is the paginated response.
 type LocalDestinationAddressesPaginatedResponse struct {
-	Total                     int                        `json:"total"`
-	Min                       int                        `json:"min"`
-	Max                       int                        `json:"max"`
 	LocalDestinationAddresses []*LocalDestinationAddress `json:"offense_types"`
 }
 
@@ -372,18 +369,8 @@ func (endpoint *Endpoint) ListLocalDestinationAddress(ctx context.Context, field
 		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
 	}
 
-	// Process the Content-Range
-	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
-	if err != nil {
-		return nil, fmt.Errorf("error while parsing the content-range [%s]: %s", resp.Header.Get("Content-Range"), err)
-	}
-
 	// Prepare the response
-	response := &LocalDestinationAddressesPaginatedResponse{
-		Total: total,
-		Min:   min,
-		Max:   max,
-	}
+	response := &LocalDestinationAddressesPaginatedResponse{}
 
 	// Decode the response
 	err = json.NewDecoder(resp.Body).Decode(&response.LocalDestinationAddresses)
