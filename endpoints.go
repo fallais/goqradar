@@ -241,9 +241,9 @@ type Services interface{}
 type SIEM interface {
 	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
 	GetOffense(context.Context, int, string) (*Offense, error)
-	//UpdateOffense(context.Context, int, string, string, string, string) error
+	UpdateOffense(context.Context, int, int, string, string, string, bool, bool) (*Offense, error)
 	ListOffenseNotes(context.Context, string) ([]*Note, int, error)
-	//CreateOffenseNote(context.Context, string) ([]*Note, int, error)
+	CreateOffenseNote(context.Context, int, string, string) (*Note, error)
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
 	ListLocalDestinationAddress(context.Context, string, string, int, int) (*LocalDestinationAddressesPaginatedResponse, error)
