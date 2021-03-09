@@ -245,27 +245,27 @@ func (endpoint *Endpoint) GetOffense(ctx context.Context, id int, fields string)
 func (endpoint *Endpoint) UpdateOffense(ctx context.Context, id, closingReasonID int, assignedTo, fields, status string, followUp, protected bool) (*Offense, error) {
 	// Options
 	options := []Option{}
-	if fields != "" {
-		options = append(options, WithParam("closingReasonID", strconv.Itoa(closingReasonID)))
+	if closingReasonID != 0 {
+		options = append(options, WithParam("closing_reason_id", strconv.Itoa(closingReasonID)))
 	}
-	if fields != "" {
-		options = append(options, WithParam("assignedTo", assignedTo))
+	if assignedTo != "" {
+		options = append(options, WithParam("assigned_to", assignedTo))
 	}
 	if fields != "" {
 		options = append(options, WithParam("fields", fields))
 	}
-	if fields != "" {
+	if status != "" {
 		options = append(options, WithParam("status", status))
 	}
-	if fields != "" {
-		options = append(options, WithParam("followUp", strconv.FormatBool(followUp)))
+	if followUp != false {
+		options = append(options, WithParam("follow_up", strconv.FormatBool(followUp)))
 	}
-	if fields != "" {
+	if protected != false {
 		options = append(options, WithParam("protected", strconv.FormatBool(protected)))
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(ctx, http.MethodGet, "/siem/offenses/"+strconv.Itoa(id), options...)
+	resp, err := endpoint.client.do(ctx, http.MethodPost, "/siem/offenses/"+strconv.Itoa(id), options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
@@ -571,10 +571,10 @@ func (endpoint *Endpoint) ListOffenseClosingReasons(ctx context.Context, fields,
 		options = append(options, WithParam("filter", filter))
 	}
 	if includeDeleted != false {
-		options = append(options, WithParam("includeDeleted", strconv.FormatBool(includeDeleted)))
+		options = append(options, WithParam("include_deleted", strconv.FormatBool(includeDeleted)))
 	}
 	if includedReserved != false {
-		options = append(options, WithParam("includedReserved", strconv.FormatBool(includedReserved)))
+		options = append(options, WithParam("included_reserved", strconv.FormatBool(includedReserved)))
 	}
 	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
 
