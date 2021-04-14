@@ -83,13 +83,10 @@ func (c *Client) do(ctx context.Context, method, endpoint string, opts ...Option
 	}
 
 	// Initialize request
-	req, err := http.NewRequest(method, queryURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, method, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	// Add context
-	req = req.WithContext(ctx)
 
 	// Default headers
 	headers := http.Header{}
