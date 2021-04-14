@@ -154,10 +154,43 @@ type Forensics interface {
 }
 
 // GUIAppFramework endpoint.
-type GUIAppFramework interface{}
+type GUIAppFramework interface {
+	ListStatusAppInstalls(context.Context, string, string, int, int) (*StatusAppInstallsPaginatedResponse, error)
+	CreateAppFramework(context.Context, string, string) (*CreatedAppFramework, error)
+	GetCreatedAppFramework(context.Context, int, string) (*CreatedAppFramework, error)
+	CancelCreatedAppFramework(context.Context, int, string) (*CreatedAppFramework, error)
+	GetAuthRequest(context.Context, int, string) (*AuthRequest, error)
+	UpdateAuthRequestResponse(context.Context, int, map[string]string, string) (*AuthRequestResponse, error)
+	ListAppDefinitions(context.Context, string, string, int, int) (*AppDefinitionsPaginatedResponse, error)
+	CreateAppDefinition(context.Context, string, string) (*AppDefinitionStatus, error)
+	GetAppDefinition(context.Context, int, string) (*AppDefinition, error)
+	CancelAppDefinition(context.Context, int, string) (*AppDefinitionStatus, error)
+	DeleteAppDefinition(context.Context, int) error
+	UpdateAppDefinition(context.Context, int, string, string) (*AppDefinitionStatus, error)
+	ListUserRoleIds(context.Context, int, string, int, int) (*UserRoleIDsPaginatedResponse, error)
+	CreateUserRoleID(context.Context, int, int, string) (*UserRoleID, error)
+	DeleteUserRoles(context.Context, int, int, string) (*UserRoleID, error)
+	ListInstalledApp(context.Context, int, string, string, int, int) (*InstalledAppsPaginatedResponse, error)
+	CreateApplication(context.Context, int, int, string, bool) (*InstalledApp, error)
+	GetinstalledApp(context.Context, int, string) (*InstalledApp, error)
+	UpdateInstalledApp(context.Context, int, int, string, string, string) (*InstalledApp, error)
+	DeleteAppInstance(context.Context, int) error
+	UpdateApplication(context.Context, int, string, string) (*CreatedAppFramework, error)
+	ListRegisteredServices(context.Context, int, int) (*RegisteredServicesPaginatedResponse, error)
+	GetRegisteredServices(context.Context, int) (*RegisteredService, error)
+}
 
 // Health endpoint.
-type Health interface{}
+type Health interface {
+	ListQRadarmetrics(context.Context, string, string, int, int) (*QRadarmetricsPaginatedResponse, error)
+	GetQRadarmetric(context.Context, int, string) (*QRadarmetric, error)
+	UpdateQRadarmetric(context.Context, int, map[string]string, string) (*QRadarmetric, error)
+	UpdateQRadarMetricGC(context.Context, map[string]interface{}, string) (*QRadarMetricGC, error)
+	ListSystemMetrics(context.Context, string, string, int, int) (*SystemMetricsPaginatedResponse, error)
+	GetSystemMetric(context.Context, int, string) (*SystemMetric, error)
+	UpdateSystemMetric(context.Context, int, map[string]interface{}, string) (*SystemMetric, error)
+	UpdateSystemMetricGC(context.Context, map[string]interface{}, string) (*QRadarMetricGC, error)
+}
 
 // HealthData endpoint.
 type HealthData interface {
@@ -208,12 +241,18 @@ type Services interface{}
 type SIEM interface {
 	ListOffenses(context.Context, string, string, string, int, int) (*OffensePaginatedResponse, error)
 	GetOffense(context.Context, int, string) (*Offense, error)
-	//UpdateOffense(context.Context, int, string, string, string, string) error
+	UpdateOffense(context.Context, int, int, string, string, string, bool, bool) (*Offense, error)
 	ListOffenseNotes(context.Context, string) ([]*Note, int, error)
-	//CreateOffenseNote(context.Context, string) ([]*Note, int, error)
+	CreateOffenseNote(context.Context, int, string, string) (*Note, error)
 	ListOffenseTypes(context.Context, string, string, string, int, int) (*OffenseTypesPaginatedResponse, error)
 	GetOffenseType(context.Context, string, string) (*OffenseType, error)
 	ListLocalDestinationAddress(context.Context, string, string, int, int) (*LocalDestinationAddressesPaginatedResponse, error)
+	GetLocalDestinationAddress(context.Context, int, string) (*LocalDestinationAddress, error)
+	ListSourceAddresses(context.Context, string, string, int, int) (*SourceAddressesPaginatedResponse, error)
+	GetSourceAddress(context.Context, int, string) (*SourceAddress, error)
+	ListOffenseClosingReasons(context.Context, string, string, bool, bool, int, int) (*OffenseClosingReasonsPaginatedResponse, error)
+	CreateOffenseClosingReason(context.Context, string, string) (*OffenseClosingReason, error)
+	GetOffenseClosingReason(context.Context, int, string) (*OffenseClosingReason, error)
 }
 
 // StagedConfig endpoint.
