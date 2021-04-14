@@ -137,6 +137,7 @@ func (endpoint *Endpoint) ListOffenses(ctx context.Context, fields, filter, sort
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
