@@ -323,12 +323,12 @@ func (endpoint *Endpoint) CreateOffenseNote(ctx context.Context, id int, noteTex
 	}
 
 	// Do the request
-	resp, err := endpoint.client.do(ctx, http.MethodGet, "/siem/offenses/"+strconv.Itoa(id)+"/notes"+noteText, options...)
+	resp, err := endpoint.client.do(ctx, http.MethodPost, "/siem/offenses/"+strconv.Itoa(id)+"/notes?note_text="+noteText, options...)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != 201 {
 		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
 	}
 
