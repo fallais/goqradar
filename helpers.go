@@ -69,7 +69,7 @@ func (c *Client) do(ctx context.Context, method, endpoint string, opts ...Option
 	}
 
 	// Raw URL
-	rawURL := fmt.Sprintf("%s/api/%s", c.BaseURL, endpoint)
+	rawURL := fmt.Sprintf("%s/api%s", c.BaseURL, endpoint)
 
 	// Build query
 	queryURL, err := url.Parse(rawURL)
