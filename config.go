@@ -227,7 +227,7 @@ type FPM struct {
 // Functions
 //------------------------------------------------------------------------------
 
-// GetUser retrieves a host
+// GetUser retrieves a user.
 func (endpoint *Endpoint) GetUser(ctx context.Context, id int, fields string) (*User, error) {
 	// Options
 	options := []Option{}
@@ -263,7 +263,7 @@ func (endpoint *Endpoint) GetUser(ctx context.Context, id int, fields string) (*
 	return response, nil
 }
 
-// ListLogSources retrieves a list of log sources.
+// ListUsers retrieves a list of users.
 func (endpoint *Endpoint) ListUsers(ctx context.Context, fields string, filter string, sort string, min, max int) (*UsersPaginatedResponse, error) {
 	// Options
 	options := []Option{}
