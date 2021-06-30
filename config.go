@@ -11,6 +11,32 @@ import (
 	"strconv"
 )
 
+// User is Qradar log source.
+type User struct {
+	ID                                int    `json:"id"`
+	Username                          string `json:"username"`
+	Email                             string `json:"email"`
+	Description                       string `json:"description"`
+	UserRoleID                        int    `json:"user_role_id"`
+	SecurityProfileID                 int    `json:"security_profile_id"`
+	LocaleID                          string `json:"locale_id"`
+	EnablePopupNotifications          bool   `json:"enable_popup_notifications"`
+	OldPassword                       string `json:"old_password"`
+	Password                          string `json:"password"`
+	PasswordCreationTime              int    `json:"password_creation_time"`
+	TenantID                          int    `json:"tenant_id"`
+	AllowSystemAuthenticationFallback bool   `json:"allow_system_authentication_fallback"`
+	InactivityTimeout                 int    `json:"inactivity_timeout"`
+}
+
+// UsersPaginatedResponse is the paginated response.
+type UsersPaginatedResponse struct {
+	Total int     `json:"total"`
+	Min   int     `json:"min"`
+	Max   int     `json:"max"`
+	User  []*User `json:"offenses"`
+}
+
 // LogSource is Qradar log source.
 type LogSource struct {
 	SendingIP                        string               `json:"sending_ip"`
@@ -200,6 +226,90 @@ type FPM struct {
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
+
+// GetUser retrieves a host
+func (endpoint *Endpoint) GetUser(ctx context.Context, id int, fields string) (*User, error) {
+	// Options
+	options := []Option{}
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/config/access/users/"+strconv.Itoa(id), options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Read the respsonse
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error while reading the request : %s", err)
+	}
+
+	// Prepare the response
+	var response *User
+
+	// Unmarshal the response
+	err = json.Unmarshal([]byte(body), &response)
+	if err != nil {
+		return nil, fmt.Errorf("Error while unmarshalling the response : %s. HTTP response is : %s", err, string(body))
+	}
+
+	return response, nil
+}
+
+// ListLogSources retrieves a list of log sources.
+func (endpoint *Endpoint) ListUsers(ctx context.Context, fields string, filter string, sort string, min, max int) (*UsersPaginatedResponse, error) {
+	// Options
+	options := []Option{}
+	options = append(options, WithParam("current_user", "false"))
+	if fields != "" {
+		options = append(options, WithParam("fields", fields))
+	}
+	if filter != "" {
+		options = append(options, WithParam("filter", filter))
+	}
+	if sort != "" {
+		options = append(options, WithParam("sort", sort))
+	}
+	options = append(options, WithHeader("Range", fmt.Sprintf("items=%d-%d", min, max)))
+
+	// Do the request
+	resp, err := endpoint.client.do(ctx, http.MethodGet, "/config/access/users", options...)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling the endpoint: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("error with the status code: %d", resp.StatusCode)
+	}
+
+	// Process the Content-Range
+	min, max, total, err := parseContentRange(resp.Header.Get("Content-Range"))
+	if err != nil {
+		return nil, fmt.Errorf("error while parsing the content-range: %s", err)
+	}
+
+	// Prepare the response
+	response := &UsersPaginatedResponse{
+		Total: total,
+		Min:   min,
+		Max:   max,
+	}
+
+	// Decode the response
+	err = json.NewDecoder(resp.Body).Decode(&response.User)
+	if err != nil {
+		return nil, fmt.Errorf("error while decoding the response: %s", err)
+	}
+
+	return response, nil
+}
 
 // ListLogSources retrieves a list of log sources.
 func (endpoint *Endpoint) ListLogSources(ctx context.Context, fields string, filter string, sort string, min, max int) (*LogSourcesPaginatedResponse, error) {
