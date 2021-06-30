@@ -91,6 +91,8 @@ type BandwithManager interface {
 
 // Config endpoint.
 type Config interface {
+	GetUser(ctx context.Context, id int, fields string) (*User, error)
+	ListUsers(ctx context.Context, fields string, filter string, sort string, min, max int) (*UsersPaginatedResponse, error)
 	ListLogSources(context.Context, string, string, string, int, int) (*LogSourcesPaginatedResponse, error)
 	ListLogSourcesGroups(context.Context, string, string, int, int) (*LogSourcesGroupsPaginatedResponse, error)
 	ListLogSourceTypes(context.Context, string, string, int, int) (*LogSourcesTypesPaginatedResponse, error)
